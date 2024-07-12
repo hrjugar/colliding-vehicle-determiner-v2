@@ -24,15 +24,16 @@ if (isDebug) {
 
 const dbName = 'cvd.sqlite3';
 
-const dbDevDir = path.join(webpackPaths.appPath, 'db');
-if (!fs.existsSync(dbDevDir)) {
-  fs.mkdirSync(dbDevDir);
+let dbPath;
+if (isDebug) {
+  const dbDevDir = path.join(webpackPaths.appPath, 'db');
+  if (!fs.existsSync(dbDevDir)) {
+    fs.mkdirSync(dbDevDir);
+  }
+  dbPath = path.join(dbDevDir, dbName);
+} else {
+  dbPath = path.join(app.getPath('userData'), dbName);
 }
-const dbDevPath = path.join(dbDevDir, dbName);
-
-
-const dbProdPath = path.join(app.getPath('userData'), dbName);
-const dbPath = isDebug ? dbDevPath : dbProdPath;
 
 const db = new Database(dbPath);
 
