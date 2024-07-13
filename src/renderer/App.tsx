@@ -1,19 +1,17 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-
-function Hello() {
-  return (
-    <div className='bg-blue-400 text-3xl'>
-      <p>Hello World</p>
-    </div>
-  );
-}
+import Layout from './layouts/Layout';
+import HomePage from './pages/home';
+import StatsPage from './pages/stats';
 
 export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Hello />} />
+        <Route element={<Layout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/stats" element={<StatsPage />} />
+        </Route>
       </Routes>
     </Router>
   );
