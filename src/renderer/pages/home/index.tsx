@@ -1,8 +1,11 @@
 import { RiArrowDropDownLine } from "@remixicon/react";
 import LayoutTabBar from "./LayoutTabBar";
 import AccidentItem from "./AccidentItem";
+import { useSettingsStore } from "../../stores/useSettingsStore";
 
 export default function HomePage() {
+  const settings = useSettingsStore((state) => state.settings);
+  
   return (
     <main className="flex flex-col justify-start items-stretch gap-4">
       <div className="flex flex-row justify-between items-center">

@@ -1,12 +1,16 @@
 /* eslint global-require: off, no-console: off, promise/always-return: off */
 
-import fs from 'fs';
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell } from 'electron';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import webpackPaths from '../../.erb/configs/webpack.paths';
-import Database from 'better-sqlite3';
+import { db, setupDatabase } from './db';
+
+console.log("----------");
+console.log("HERE AT main.ts");
+console.log("HERE AT main.ts");
+console.log("HERE AT main.ts");
+console.log("----------");
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -21,31 +25,6 @@ const isDebug =
 if (isDebug) {
   require('electron-debug')();
 }
-
-const dbName = 'cvd.sqlite3';
-
-let dbPath;
-if (isDebug) {
-  const dbDevDir = path.join(webpackPaths.appPath, 'db');
-  if (!fs.existsSync(dbDevDir)) {
-    fs.mkdirSync(dbDevDir);
-  }
-  dbPath = path.join(dbDevDir, dbName);
-} else {
-  dbPath = path.join(app.getPath('userData'), dbName);
-}
-
-const db = new Database(dbPath);
-
-db
-  .prepare(`
-      CREATE TABLE IF NOT EXISTS 
-        accidents (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          title TEXT NOT NULL
-        )
-  `)
-  .run();
 
 const installExtensions = async () => {
   const installer = require('electron-devtools-installer');
@@ -116,9 +95,7 @@ const createWindow = async () => {
   });
 };
 
-/**
- * Add event listeners...
- */
+setupDatabase();
 
 app.on('window-all-closed', () => {
   db.close();
