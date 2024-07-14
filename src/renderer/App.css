@@ -14,7 +14,7 @@
 }
 
 main {
-  @apply px-4 pt-4;
+  @apply flex-grow px-6 pt-4 overflow-y-auto;
 }
 
 .draggable {

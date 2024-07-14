@@ -45,11 +45,14 @@ module.exports = {
           900: '#111827'
         }
       },
-      width: {
+      minWidth: {
         'side-nav': '11.25rem',
       },
       height: {
         'top-nav': '4.5rem',
+      },
+      gridTemplateColumns: {
+        'search-results': 'repeat(auto-fill, minmax(272px, 1fr))'
       }
     }
   },

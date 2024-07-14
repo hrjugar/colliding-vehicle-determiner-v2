@@ -26,7 +26,7 @@ const secondaryTabs = [
 
 export default function SideNavBar() {
   return (
-    <nav className="w-side-nav flex flex-col justify-start items-stretch gap-4 pb-4 border-r border-cool-gray-300">
+    <nav className="min-w-side-nav flex flex-col justify-start items-stretch gap-4 pb-4 border-r border-cool-gray-300">
       <div className="draggable w-full h-top-nav" />
 
       <div className="flex-grow flex flex-col justify-between items-stretch px-4">
