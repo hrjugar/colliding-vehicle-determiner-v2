@@ -10,11 +10,11 @@
 }
 
 #root {
-  @apply w-full min-h-screen flex flex-col justify-start items-stretch bg-white transition-all;
+  @apply w-full min-h-screen flex flex-row justify-start items-stretch bg-white transition-all;
 }
 
 main {
-  @apply px-6;
+  @apply px-4 pt-4;
 }
 
 .draggable {

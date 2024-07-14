@@ -29,12 +29,12 @@ export default function SearchBar() {
       }}
     >
       <button type="submit" className="group">
-        <RiSearchLine size={16} className="transition-colors text-cool-gray-400 group-hover:text-cool-gray-500" />
+        <RiSearchLine size={18} className="transition-colors text-cool-gray-400 group-hover:text-cool-gray-500" />
       </button>
 
       <input 
         type="text"
-        className="flex-grow bg-transparent placeholder-cool-gray-400 text-cool-gray-400 focus:outline-none text-xs" 
+        className="flex-grow bg-transparent placeholder-cool-gray-400 text-cool-gray-400 focus:outline-none text-sm" 
         placeholder="Search" 
         onChange={(e) => setSearchText(e.target.value)}
         value={searchText}

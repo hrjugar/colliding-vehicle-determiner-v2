@@ -26,7 +26,7 @@ export default function TabBar() {
           {({ isActive }) => (
             <>
               <tab.icon size={18} className={`rounded-lg transition-colors ${isActive ? 'text-indigo-400' : 'text-cool-gray-400 group-hover:text-cool-gray-500'}`} />
-              <span className={`text-xs font-medium transition-colors ${isActive ? 'text-indigo-400' : 'text-cool-gray-400 group-hover:text-cool-gray-500'}`}>
+              <span className={`text-xs transition-colors ${isActive ? 'text-indigo-400' : 'text-cool-gray-400 group-hover:text-cool-gray-500'}`}>
                 {tab.name}
               </span>
             </>

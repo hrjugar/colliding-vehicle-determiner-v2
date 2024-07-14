@@ -44,6 +44,12 @@ module.exports = {
           800: '#1F2937',
           900: '#111827'
         }
+      },
+      width: {
+        'side-nav': '11.25rem',
+      },
+      height: {
+        'top-nav': '4.5rem',
       }
     }
   },
