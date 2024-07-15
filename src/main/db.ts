@@ -69,14 +69,15 @@ const initDatabaseHandlers = () => {
     return settingsJson;
   });
 
-  ipcMain.on('db-settings-set', (_, setting: Setting) => {
+  ipcMain.handle('db-settings-set', (_, setting: Setting) => {
     db
       .prepare(`INSERT OR REPLACE INTO settings (name, value) VALUES (?, ?)`)
       .run(setting.name, setting.value);
 
-      BrowserWindow.getAllWindows().forEach((win) => {
-        win.webContents.send('setting-change', setting);
-      });
+    BrowserWindow.getAllWindows().forEach((win) => {
+      win.webContents.send('setting-change', setting);
+      console.log(`SETTING ${setting.name} CHANGED TO: ${setting.value}`);
+    });
   });
 };
 

@@ -23,9 +23,5 @@ export const useSettingsStore = create<SettingsStore>((set) => ({
 
   updateSetting: async (setting: Setting) => {
     await window.electron.db.setSetting(setting);
-
-    set((state) => ({
-      settings: { ...state.settings, [setting.name]: setting.value }
-    }))
   }
 }));

@@ -28,7 +28,7 @@ const electronHandler = {
       return ipcRenderer.invoke('db-settings-get');
     },
     setSetting(setting: Setting) {
-      return ipcRenderer.invoke('db-settings-set', setting.name, setting.value);
+      return ipcRenderer.invoke('db-settings-set', setting);
     },
     onSettingChange(callback: (setting: Setting) => void) {
       const listener = (_: IpcRendererEvent, setting: Setting) => callback(setting);
