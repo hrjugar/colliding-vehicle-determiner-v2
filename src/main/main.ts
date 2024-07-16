@@ -4,13 +4,7 @@ import path from 'path';
 import { app, BrowserWindow, shell } from 'electron';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import { db, setupDatabase } from './db';
-
-console.log("----------");
-console.log("HERE AT main.ts");
-console.log("HERE AT main.ts");
-console.log("HERE AT main.ts");
-console.log("----------");
+import { db, setupDatabase } from './sqlite';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -38,6 +32,7 @@ const createWindow = async () => {
   mainWindow = new BrowserWindow({
     show: false,
     minWidth: 800,
+    ...(process.env.NODE_ENV === 'development' ? { width: 1500 } : {}),
     minHeight: 600,
     icon: getAssetPath('icon.png'),
     titleBarStyle: 'hidden',
@@ -78,8 +73,6 @@ const createWindow = async () => {
   });
 };
 
-setupDatabase();
-
 app.on('window-all-closed', () => {
   db.close();
   if (process.platform !== 'darwin') {
@@ -90,6 +83,7 @@ app.on('window-all-closed', () => {
 app
   .whenReady()
   .then(() => {
+    setupDatabase();
     createWindow();
     app.on('activate', () => {
       if (mainWindow === null) createWindow();
