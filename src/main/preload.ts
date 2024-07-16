@@ -47,8 +47,8 @@ const electronHandler = {
       getOne(id: number): Promise<Accident> {
         return ipcRenderer.invoke('db-accidents-get-one', id);
       },
-      add(accidentInput: AccidentInput): Promise<void> {
-        return ipcRenderer.invoke('db-accidents-add', accidentInput);
+      add(accidentInput: AccidentInput) {
+        return ipcRenderer.invoke('db-accidents-add-one', accidentInput);
       },
       deleteOne(id: number) {
         return ipcRenderer.invoke('db-accidents-delete-one', id);

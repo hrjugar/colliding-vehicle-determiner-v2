@@ -1,13 +1,13 @@
 import { create } from "zustand";
-import { Accident, AccidentInput, CollisionStatusSetting, OrderSetting, SortBySetting } from "../../main/types";
+import { Accident, AccidentInput, CollisionStatusSettingValue, OrderSettingValue, SortBySettingValue } from "../../main/types";
 
 interface AccidentSortOptions {
-  sort: SortBySetting;
-  order: OrderSetting;
+  sort: SortBySettingValue;
+  order: OrderSettingValue;
 }
 
 interface AccidentFilterOptions {
-  collisionStatus?: CollisionStatusSetting;
+  collisionStatus?: CollisionStatusSettingValue;
 }
 
 interface AccidentsStore {

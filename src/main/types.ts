@@ -8,28 +8,37 @@ export interface Accident extends AccidentInput {
   dateCreated: string;
 }
 
-export type LayoutSetting = 'grid' | 'table';
-export type SortBySetting = 'name' | 'date';
-export type OrderSetting = 'asc' | 'desc';
-export type CollisionStatusSetting = 'all' | 'collision' | 'no-collision';
+export type LayoutSettingValue = 'grid' | 'table';
+export type SortBySettingValue = 'name' | 'date';
+export type OrderSettingValue = 'asc' | 'desc';
+export type CollisionStatusSettingValue = 'all' | 'collision' | 'no-collision';
 
 export interface Settings {
-  'layout': LayoutSetting;
-  'sortBy': SortBySetting;
-  'order': OrderSetting;
-  'collisionStatus': CollisionStatusSetting;
+  'layout': LayoutSettingValue;
+  'sortBy': SortBySettingValue;
+  'order': OrderSettingValue;
+  'collisionStatus': CollisionStatusSettingValue;
 }
 
+export type SettingName = keyof Settings;
+
+// export type Setting = {
+//   name: 'layout',
+//   value: LayoutSettingValue
+// } | {
+//   name: 'sortBy',
+//   value: SortBySettingValue
+// } | {
+//   name: 'order',
+//   value: OrderSettingValue
+// } | {
+//   name: 'collisionStatus',
+//   value: CollisionStatusSettingValue
+// };
+
 export type Setting = {
-  name: 'layout',
-  value: LayoutSetting
-} | {
-  name: 'sortBy',
-  value: SortBySetting
-} | {
-  name: 'order',
-  value: OrderSetting
-} | {
-  name: 'collisionStatus',
-  value: CollisionStatusSetting
-}
+  [K in keyof Settings]: {
+    name: K;
+    value: Settings[K];
+  }
+}[keyof Settings];

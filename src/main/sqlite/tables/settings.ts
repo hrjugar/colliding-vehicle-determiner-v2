@@ -1,6 +1,6 @@
 import { BrowserWindow, ipcMain } from "electron";
 import { db } from "../db";
-import { CollisionStatusSetting, LayoutSetting, OrderSetting, Setting, Settings, SortBySetting } from "../../types";
+import { CollisionStatusSettingValue, LayoutSettingValue, OrderSettingValue, Setting, Settings, SortBySettingValue } from "../../types";
 
 const initSettingsTable = () => {
   db.prepare(`
@@ -30,10 +30,10 @@ const initSettingsHandlers = () => {
   ipcMain.handle('db-settings-get', () => {
     const settingsArray = db.prepare(`SELECT name, value FROM settings`).all() as Setting[];
 
-    let layoutSetting: LayoutSetting = 'grid';
-    let sortBySetting: SortBySetting = 'date';
-    let orderSetting: OrderSetting = 'desc';
-    let collisionStatusSetting: CollisionStatusSetting = 'all';
+    let layoutSetting: LayoutSettingValue = 'grid';
+    let sortBySetting: SortBySettingValue = 'date';
+    let orderSetting: OrderSettingValue = 'desc';
+    let collisionStatusSetting: CollisionStatusSettingValue = 'all';
 
     for (const setting of settingsArray) {
       if (setting.name === 'layout') {
@@ -53,11 +53,12 @@ const initSettingsHandlers = () => {
       order: orderSetting,
       collisionStatus: collisionStatusSetting,
     };
-    
+
     return settingsJson;
   });
 
   ipcMain.handle('db-settings-set', (_, setting: Setting) => {
+
     db
       .prepare(`INSERT OR REPLACE INTO settings (name, value) VALUES (?, ?)`)
       .run(setting.name, setting.value);
