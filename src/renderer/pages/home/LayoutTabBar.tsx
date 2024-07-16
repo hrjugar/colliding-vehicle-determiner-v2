@@ -1,24 +1,27 @@
-import { RiLayoutGridLine, RiListUnordered } from "@remixicon/react";
+import { RemixiconComponentType, RiLayoutGridLine, RiListUnordered } from "@remixicon/react";
 import { useSettingsStore } from "../../stores/useSettingsStore";
+import { LayoutSetting } from "../../../main/types";
+import { useMutation } from "react-query";
 
-interface LayoutTabBarProps {
-  layout: string;
+interface Tab {
+  icon: RemixiconComponentType;
+  layout: LayoutSetting;
 }
 
-const tabs = [
+const tabs: Tab[] = [
   {
     icon: RiLayoutGridLine,
     layout: 'grid',
   },
   {
     icon: RiListUnordered,
-    layout: 'list',
+    layout: 'table',
   }
 ];
 
 export default function LayoutTabBar() {
-  const updateSetting = useSettingsStore((state) => state.updateSetting);
   const layout = useSettingsStore((state) => state.settings.layout);
+  const updateSetting = useSettingsStore((state) => state.updateSetting);
 
   return (
     <div className="flex flex-row justify-center items-center bg-cool-gray-100 rounded-lg">
@@ -33,9 +36,7 @@ export default function LayoutTabBar() {
             )}
           `}
           key={`layout-tab-${tab.layout}`}
-          onClick={() => {
-            updateSetting({ name: 'layout', value: tab.layout });
-          }}
+          onClick={() => updateSetting({ name: 'layout', value: tab.layout })}
         >
           <tab.icon size={18} />
         </button>

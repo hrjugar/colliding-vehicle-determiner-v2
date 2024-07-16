@@ -4,25 +4,25 @@ import Layout from './layouts/Layout';
 import HomePage from './pages/home';
 import StatsPage from './pages/stats';
 import SettingsPage from './pages/settings';
-import { useSettingsStore } from './stores/useSettingsStore';
-import { useEffect } from 'react';
+import DatabaseInitializer from './gates/DatabaseInitializer';
+import { QueryClient, QueryClientProvider } from 'react-query';
+
+const queryClient = new QueryClient();
 
 export default function App() {
-  const initSettings = useSettingsStore((state) => state.initSettings);
-
-  useEffect(() => {
-    initSettings();
-  }, [initSettings]);
-
   return (
-    <Router>
-      <Routes>
-        <Route element={<Layout />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/stats" element={<StatsPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-        </Route>
-      </Routes>
-    </Router>
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <Routes>
+          <Route element={<DatabaseInitializer />}>
+            <Route element={<Layout />}>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/stats" element={<StatsPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+            </Route>
+          </Route>
+        </Routes>
+      </Router>
+    </QueryClientProvider>
   );
 }
