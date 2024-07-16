@@ -1,7 +1,7 @@
 import { BrowserWindow, ipcMain } from "electron";
 import { db } from "../db";
 import { Accident, AccidentInput } from "../../types";
-import { formatDatetimeToText } from "../../util";
+import { formatDateTimeToText } from "../../util";
 
 const initAccidentsTable = () => {
   db
@@ -27,7 +27,7 @@ const initAccidentsHandlers = () => {
   });
 
   ipcMain.handle('db-accidents-add', (_, accidentInput: AccidentInput) => {
-    const currentDateTimeText = formatDatetimeToText(new Date());
+    const currentDateTimeText = formatDateTimeToText(new Date());
 
     const statement = db
       .prepare(`INSERT INTO accidents (name, collidingVehicle, dateCreated) VALUES (?, ?, ?)`)

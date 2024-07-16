@@ -1,6 +1,7 @@
 import { RiDeleteBinLine } from "@remixicon/react";
 import { Accident } from "../../../main/types"
 import { useAccidentsStore } from "../../stores/useAccidentsStore";
+import { convertToRelativeDate } from "../../utils/date";
 
 interface AccidentGridItemProps {
   accident: Accident;
@@ -23,7 +24,7 @@ export default function AccidentGridItem({ accident } : AccidentGridItemProps) {
 
       <div className="w-full flex flex-col justify-start items-start">
         <p className="text-base leading-none text-cool-gray-500">{accident.name}</p>
-        <p className="text-sm text-cool-gray-400">{accident.dateCreated}</p>
+        <p className="text-sm text-cool-gray-400">Created {convertToRelativeDate(accident.dateCreated)}</p>
       </div>
     </div>
   )
