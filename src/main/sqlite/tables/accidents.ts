@@ -26,7 +26,7 @@ const initAccidentsHandlers = () => {
     return db.prepare(`SELECT * FROM accidents WHERE id = ?`).get(id) as Accident;
   });
 
-  ipcMain.handle('db-accidents-add', (_, accidentInput: AccidentInput) => {
+  ipcMain.handle('db-accidents-add-one', (_, accidentInput: AccidentInput) => {
     const currentDateTimeText = formatDateTimeToText(new Date());
 
     const statement = db
