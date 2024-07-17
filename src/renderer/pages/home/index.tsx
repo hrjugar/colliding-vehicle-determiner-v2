@@ -72,7 +72,13 @@ export default function HomePage() {
         </div>
       </div>
 
-      {settings.layout === 'grid' ? (
+      {processedAccidents.length === 0 ? (
+        <>
+          <div className="flex-grow flex justify-center items-center">
+            <p className="text-cool-gray-400">No videos uploaded.</p>
+          </div>
+        </>
+      ) : settings.layout === 'grid' ? (
         <AccidentGrid processedAccidents={processedAccidents} />
       ) : (
         <AccidentTable />
