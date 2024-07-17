@@ -8,23 +8,21 @@ interface AccidentSortOptions {
 }
 
 interface AccidentFilterOptions {
-  collisionStatus?: CollisionStatusSettingValue;
+  name: string;
+  collisionStatus: CollisionStatusSettingValue;
 }
 
 interface AccidentsStore {
   accidents: Accident[];
-  nameFilter: string;
   
   initAccidents: () => Promise<void>;
-  getProcessedAccidents: (sortOptions: AccidentSortOptions, filterOptions?: AccidentFilterOptions) => Accident[];
+  getProcessedAccidents: (sortOptions: AccidentSortOptions, filterOptions: AccidentFilterOptions) => Accident[];
   addAccident: (accident: AccidentInput) => Promise<void>;
   deleteAccident: (id: number) => Promise<void>;
-  filterName: (nameFilter: string) => void;
 }
 
 export const useAccidentsStore = create<AccidentsStore>((set, get) => ({
   accidents: [],
-  nameFilter: '',
 
   async initAccidents() {
     const accidents = await window.electron.db.accidents.getAll();
@@ -56,15 +54,13 @@ export const useAccidentsStore = create<AccidentsStore>((set, get) => ({
 
     if (filterOptions) {
       processedAccidents = get().accidents.filter((accident) => {
-        if (get().nameFilter && !accident.name.includes(get().nameFilter)) {
+        if (!accident.name.toLowerCase().includes(filterOptions.name.toLowerCase())) {
           return false;
         }
 
         if (
-          filterOptions.collisionStatus !== undefined && (
-            (filterOptions.collisionStatus === 'collision' && accident.collidingVehicle === 0) ||
-            (filterOptions.collisionStatus === 'no-collision'  && accident.collidingVehicle !== 0)
-          )
+          (filterOptions.collisionStatus === 'collision' && accident.collidingVehicle === 0) ||
+          (filterOptions.collisionStatus === 'no-collision'  && accident.collidingVehicle !== 0)
         ) {
           return false;
         }
@@ -102,9 +98,5 @@ export const useAccidentsStore = create<AccidentsStore>((set, get) => ({
 
   async deleteAccident(id) {
     await window.electron.db.accidents.deleteOne(id);
-  },
-
-  filterName(nameFilter) {
-    set({ nameFilter });
   },
 }));

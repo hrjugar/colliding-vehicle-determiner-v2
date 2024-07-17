@@ -6,18 +6,18 @@ import SortFilterToggle from "./SortFilterToggle";
 import { useAccidentsStore } from "../../stores/useAccidentsStore";
 import { useShallow } from "zustand/react/shallow";
 import { useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 
 export default function HomePage() {
+  const [searchParams] = useSearchParams();
   const settings = useSettingsStore((state) => state.settings);
   
   const [
     accidents,
-    nameFilter,
     getProcessedAccidents
   ] = useAccidentsStore(
     useShallow((state) => [
       state.accidents,
-      state.nameFilter,
       state.getProcessedAccidents
     ])
   );
@@ -29,10 +29,11 @@ export default function HomePage() {
         order: settings.order as ("asc" | "desc"),
       },
       {
+        name: searchParams.get('search') || '',
         collisionStatus: settings.collisionStatus,
       }
     );
-  }, [accidents, nameFilter, settings]);
+  }, [accidents, searchParams, settings]);
 
   return (
     <main className="flex flex-col justify-start items-stretch gap-4 pb-4">

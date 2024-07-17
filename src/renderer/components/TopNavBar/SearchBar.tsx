@@ -7,6 +7,18 @@ export default function SearchBar() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    navigate({
+      pathname: "/",
+      ...(searchText ? {
+        search: createSearchParams({
+          search: searchText
+        }).toString()
+      } : {})
+    });
+  };
+
   useEffect(() => {
     if (!location.search) {
       setSearchText("");
@@ -16,17 +28,7 @@ export default function SearchBar() {
   return (
     <form 
       className="non-draggable flex-grow flex flex-row justify-start items-center p-4 gap-2.5 bg-cool-gray-100 rounded-xl"
-      onSubmit={(e) => {
-        e.preventDefault();
-        navigate({
-          pathname: "/",
-          ...(searchText ? {
-            search: createSearchParams({
-              search: searchText
-            }).toString()
-          } : {})
-        });
-      }}
+      onSubmit={handleSubmit}
     >
       <button type="submit" className="group">
         <RiSearchLine size={18} className="transition-colors text-cool-gray-400 group-hover:text-cool-gray-500" />
