@@ -5,12 +5,14 @@ import AccidentTable from "./AccidentTable";
 import SortFilterToggle from "./SortFilterToggle";
 import { useAccidentsStore } from "../../stores/useAccidentsStore";
 import { useShallow } from "zustand/react/shallow";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useAccidentItemsStore } from "./useAccidentItemsStore";
 
 export default function HomePage() {
   const [searchParams] = useSearchParams();
   const settings = useSettingsStore((state) => state.settings);
+  const unselectAllItems = useAccidentItemsStore((state) => state.unselectAllItems);
   
   const [
     accidents,
@@ -34,6 +36,14 @@ export default function HomePage() {
       }
     );
   }, [accidents, searchParams, settings]);
+
+  useEffect(() => {
+    document.addEventListener('click', unselectAllItems);
+    return () => {
+      unselectAllItems();
+      document.removeEventListener('click', unselectAllItems);
+    }
+  }, [unselectAllItems]);
 
   return (
     <main className="flex flex-col justify-start items-stretch gap-4 pb-4">

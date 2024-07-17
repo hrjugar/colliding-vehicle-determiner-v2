@@ -7,11 +7,12 @@ interface AccidentGridProps {
 
 export default function AccidentGrid({ processedAccidents } : AccidentGridProps) {
   return (
-    <div className="grid grid-cols-search-results gap-4">
-      {processedAccidents.map((accident) => (
+    <div className="grid grid-cols-search-results gap-2">
+      {processedAccidents.map((accident, index) => (
         <AccidentGridItem 
           key={`accident-item-${accident.id}`} 
-          accident={accident} 
+          accident={accident}
+          index={index}
         />
       ))}
     </div>
