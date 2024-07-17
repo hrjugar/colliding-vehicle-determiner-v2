@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { Setting, Settings } from "../../main/types";
+import { produce } from "immer";
 
 interface SettingsStore {
   settings: Settings;
@@ -20,9 +21,11 @@ export const useSettingsStore = create<SettingsStore>((set) => ({
     set({ settings });
 
     window.electron.db.settings.onChange((setting) => {
-      set((state) => ({
-        settings: { ...state.settings, [setting.name]: setting.value }
-      }))
+      set(
+        produce((state) => {
+          state.settings[setting.name] = setting.value;
+        })
+      )
     });
   },
 

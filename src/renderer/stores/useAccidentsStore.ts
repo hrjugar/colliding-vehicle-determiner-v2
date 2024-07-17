@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { Accident, AccidentInput, CollisionStatusSettingValue, OrderSettingValue, SortBySettingValue } from "../../main/types";
+import { produce } from "immer";
 
 interface AccidentSortOptions {
   sort: SortBySettingValue;
@@ -30,25 +31,24 @@ export const useAccidentsStore = create<AccidentsStore>((set, get) => ({
     set({ accidents });
     
     window.electron.db.accidents.onChange((updatedAccident) => {
-      set((state) => {
-        const newAccidents = [...state.accidents];
-        const oldAccidentIndex = state.accidents.findIndex((accident) => accident.id === updatedAccident.id);
+      set(
+        produce((state: AccidentsStore) => {
+          const oldAccidentIndex = state.accidents.findIndex((accident) => accident.id === updatedAccident.id);
 
-        if (oldAccidentIndex === -1) {
-          newAccidents.push(updatedAccident);
-        } else {
-          newAccidents[oldAccidentIndex] = updatedAccident;
-        }
-
-        return { accidents: newAccidents }
-      })
+          if (oldAccidentIndex === -1) {
+            state.accidents.push(updatedAccident);
+          } else {
+            state.accidents[oldAccidentIndex] = updatedAccident;
+          }
+        })
+      )
     });
 
     window.electron.db.accidents.onDelete((id) => {
-      set((state) => {
-        return { accidents: state.accidents.filter((accident) => accident.id !== id) }
-      })
-    })
+      set((state) => ({
+        accidents: state.accidents.filter((accident) => accident.id !== id)
+      }));
+    });
   },
 
   getProcessedAccidents(sortOptions, filterOptions) {
