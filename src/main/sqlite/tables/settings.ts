@@ -1,6 +1,6 @@
 import { BrowserWindow, ipcMain } from "electron";
 import { db } from "../db";
-import { CollisionStatusSettingValue, LayoutSettingValue, OrderSettingValue, Setting, Settings, SortBySettingValue } from "../../types";
+import { CollisionStatusSettingValue, LayoutSettingValue, OrderSettingValue, Setting, Settings, SortBySettingValue } from "../../../types";
 
 const initSettingsTable = () => {
   db.prepare(`

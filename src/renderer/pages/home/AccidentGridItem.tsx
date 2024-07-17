@@ -1,5 +1,5 @@
 import { RiDeleteBinLine } from "@remixicon/react";
-import { Accident } from "../../../main/types"
+import { Accident } from "../../../types";
 import { useAccidentsStore } from "../../stores/useAccidentsStore";
 import { convertToRelativeDate } from "../../utils/date";
 

@@ -1,9 +1,5 @@
-import { useMemo } from "react";
-import { useAccidentsStore } from "../../stores/useAccidentsStore";
-import { useSettingsStore } from "../../stores/useSettingsStore";
 import AccidentGridItem from "./AccidentGridItem";
-import { useShallow } from "zustand/react/shallow";
-import { Accident } from "../../../main/types";
+import { Accident } from "../../../types";
 
 interface AccidentGridProps {
   processedAccidents: Accident[];

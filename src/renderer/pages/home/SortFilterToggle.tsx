@@ -1,7 +1,7 @@
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { RiArrowDropDownLine } from "@remixicon/react";
 import { useSettingsStore } from "../../stores/useSettingsStore";
-import { Setting, SettingName, Settings } from "../../../main/types";
+import { Setting, SettingName, Settings } from "../../../types";
 import { useMemo } from "react";
 
 interface SortFilterToggleProps<TSettingName extends SettingName> {

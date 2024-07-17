@@ -1,6 +1,6 @@
 import { RemixiconComponentType, RiLayoutGridLine, RiListUnordered } from "@remixicon/react";
 import { useSettingsStore } from "../../stores/useSettingsStore";
-import { LayoutSettingValue } from "../../../main/types";
+import { LayoutSettingValue } from "../../../types";
 
 interface Tab {
   icon: RemixiconComponentType;

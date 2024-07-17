@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Setting, Settings } from "../../main/types";
+import { Setting, Settings } from "../../types";
 import { produce } from "immer";
 
 interface SettingsStore {

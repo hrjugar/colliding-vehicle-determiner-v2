@@ -1,7 +1,7 @@
 // Disable no-unused-vars, broken for spread args
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
-import { Accident, AccidentInput, Setting, Settings } from './types';
+import { Accident, AccidentInput, Setting, Settings } from '../types';
 
 // export type Channels = 'ipc-example';
 

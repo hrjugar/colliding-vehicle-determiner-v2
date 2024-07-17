@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Accident, AccidentInput, CollisionStatusSettingValue, OrderSettingValue, SortBySettingValue } from "../../main/types";
+import { Accident, AccidentInput, CollisionStatusSettingValue, OrderSettingValue, SortBySettingValue } from "../../types";
 import { produce } from "immer";
 
 interface AccidentSortOptions {

@@ -1,6 +1,6 @@
 import { BrowserWindow, ipcMain } from "electron";
 import { db } from "../db";
-import { Accident, AccidentInput } from "../../types";
+import { Accident, AccidentInput } from "../../../types";
 import { formatDateTimeToText } from "../../util";
 
 const initAccidentsTable = () => {
