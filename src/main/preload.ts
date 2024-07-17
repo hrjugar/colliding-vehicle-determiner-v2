@@ -23,6 +23,11 @@ const electronHandler = {
   //     ipcRenderer.once(channel, (_event, ...args) => func(...args));
   //   },
   // },
+  os: {
+    get(): Promise<NodeJS.Platform> {
+      return ipcRenderer.invoke('os-get');
+    }
+  },
   db: {
     settings: {
       get(): Promise<Settings> {

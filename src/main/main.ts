@@ -1,7 +1,8 @@
 /* eslint global-require: off, no-console: off, promise/always-return: off */
 
+import os from 'os';
 import path from 'path';
-import { app, BrowserWindow, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import { db, setupDatabase } from './sqlite';
@@ -72,6 +73,8 @@ const createWindow = async () => {
     return { action: 'deny' };
   });
 };
+
+ipcMain.handle('os-get', () => os.platform());
 
 app.on('window-all-closed', () => {
   db.close();
