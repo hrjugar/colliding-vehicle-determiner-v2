@@ -4,6 +4,7 @@ import { create } from "zustand";
 interface AccidentItemsStore {
   selectedItemIndexes: Set<number>,
   lastSelectedItemIndex: number,
+  lastSelectedRangeItemIndex: number,
   selectItems: (index: number, isRange: boolean) => void,
   unselectAllItems: () => void,
 }
@@ -11,6 +12,7 @@ interface AccidentItemsStore {
 export const useAccidentItemsStore = create<AccidentItemsStore>((set, get) => ({
   selectedItemIndexes: new Set(),
   lastSelectedItemIndex: -1,
+  lastSelectedRangeItemIndex: -1,
 
   selectItems(index, isRange = false) {
     if (isRange) {
@@ -20,12 +22,26 @@ export const useAccidentItemsStore = create<AccidentItemsStore>((set, get) => ({
             state.selectedItemIndexes.add(index);
             state.lastSelectedItemIndex = index;
           } else {
-            const min = Math.min(state.lastSelectedItemIndex, index);
-            const max = Math.max(state.lastSelectedItemIndex, index);
+            const minIndex = Math.min(state.lastSelectedItemIndex, index);
+            const maxIndex = Math.max(state.lastSelectedItemIndex, index);
 
-            for (let i = min; i <= max; i++) {
+            for (let i = minIndex; i <= maxIndex; i++) {
               state.selectedItemIndexes.add(i);
             }
+
+            if (state.lastSelectedRangeItemIndex !== -1) {
+              if (state.lastSelectedItemIndex === minIndex && index < state.lastSelectedRangeItemIndex) {
+                for (let i = index + 1; i <= state.lastSelectedRangeItemIndex; i++) {
+                  state.selectedItemIndexes.delete(i);
+                }
+              } else if (state.lastSelectedItemIndex === maxIndex && index > state.lastSelectedRangeItemIndex) {
+                for (let i = state.lastSelectedRangeItemIndex; i <= index - 1; i++) {
+                  state.selectedItemIndexes.delete(i);
+                }
+              }
+            }
+
+            state.lastSelectedRangeItemIndex = index;
           }
         })
       );
@@ -38,6 +54,8 @@ export const useAccidentItemsStore = create<AccidentItemsStore>((set, get) => ({
             state.selectedItemIndexes.add(index);
             state.lastSelectedItemIndex = index;
           }
+
+          state.lastSelectedRangeItemIndex = -1;
         })
       );
     }
@@ -46,6 +64,6 @@ export const useAccidentItemsStore = create<AccidentItemsStore>((set, get) => ({
   },
 
   unselectAllItems() {
-    set({ selectedItemIndexes: new Set(), lastSelectedItemIndex: -1 });
+    set({ selectedItemIndexes: new Set(), lastSelectedItemIndex: -1, lastSelectedRangeItemIndex: -1 });
   },
 }));
