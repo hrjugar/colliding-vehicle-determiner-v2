@@ -9,18 +9,26 @@
   src: url('../../assets/fonts/Asap-VariableFont_wdth,wght.ttf');
 }
 
+@layer base {
+  * {
+    @apply select-none;
+  }
+}
+
+@layer components {
+  .draggable {
+    -webkit-app-region: drag;
+  }
+  
+  .non-draggable {
+    -webkit-app-region: no-drag;
+  }
+}
+
 #root {
   @apply relative w-full min-h-screen flex flex-row justify-start items-stretch bg-white transition-all;
 }
 
 main {
   @apply flex-grow px-6 pt-4 overflow-y-auto;
-}
-
-.draggable {
-  -webkit-app-region: drag;
-}
-
-.non-draggable {
-  -webkit-app-region: no-drag;
 }
