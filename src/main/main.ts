@@ -115,9 +115,6 @@ app
           src = '';
       }
 
-      console.log("@@ mediahandler");
-      console.log(`src: ${src}`);
-
       return net.fetch(`file://${src}`);
     });
 

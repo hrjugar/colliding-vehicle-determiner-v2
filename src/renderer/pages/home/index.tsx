@@ -92,7 +92,7 @@ export default function HomePage() {
       ) : settings.layout === 'grid' ? (
         <AccidentGrid processedAccidents={processedAccidents} />
       ) : (
-        <AccidentTable />
+        <AccidentTable processedAccidents={processedAccidents} />
       )}
     </main>
   )
