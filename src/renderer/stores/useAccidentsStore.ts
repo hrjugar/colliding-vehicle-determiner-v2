@@ -17,6 +17,7 @@ interface AccidentsStore {
   
   initAccidents: () => Promise<void>;
   getProcessedAccidents: (sortOptions: AccidentSortOptions, filterOptions: AccidentFilterOptions) => Accident[];
+  findAccident: () => Promise<string | null>;
   addAccident: (accident: AccidentInput) => Promise<void>;
   deleteAccident: (id: number) => Promise<void>;
 }
@@ -90,6 +91,10 @@ export const useAccidentsStore = create<AccidentsStore>((set, get) => ({
     })
 
     return processedAccidents;
+  },
+
+  async findAccident() {
+    return await window.electron.db.accidents.find();
   },
 
   async addAccident(accident) {

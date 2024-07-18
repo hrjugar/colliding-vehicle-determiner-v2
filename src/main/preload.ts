@@ -52,6 +52,9 @@ const electronHandler = {
       getOne(id: number): Promise<Accident> {
         return ipcRenderer.invoke('accidents-get-one', id);
       },
+      find(): Promise<string | null> {
+        return ipcRenderer.invoke('accidents-find');
+      },
       add(accidentInput: AccidentInput) {
         return ipcRenderer.invoke('accidents-add-one', accidentInput);
       },

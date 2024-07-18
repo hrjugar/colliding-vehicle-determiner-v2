@@ -46,8 +46,13 @@ export default function AccidentGridItem({ accident, index } : AccidentGridItemP
       `}
       onClick={handleClick}
     >
-      <div className="relative w-full h-full aspect-video bg-cool-gray-100 border border-cool-gray-200 rounded-sm group-hover:bg-cool-gray-200">
+      <div className="relative w-full h-full aspect-video bg-cool-gray-100 border border-cool-gray-200 rounded-sm group-hover:brightness-95">
         {/* TEMPORARY ONLY */}
+        <img 
+          src={`mediahandler://thumbnail//${accident.id}`} 
+          className="max-w-full max-h-full object-contain object-center"
+          alt="Accident thumbnail"
+        />
         <button 
           className="absolute top-2 right-2 p-2 flex justify-center items-center rounded-md bg-white border border-cool-gray-100"
           onClick={() => deleteAccident(accident.id)}

@@ -2,12 +2,13 @@
 
 import os from 'os';
 import path from 'path';
-import { app, BrowserWindow, ipcMain, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, net, protocol, shell } from 'electron';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import { clearTempDir, setupDirectories } from './directories';
 import { setupCollections } from './collections';
 import { db } from './db';
+import { getProjectsDir } from './collections/settings';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -97,6 +98,29 @@ app
     setupDirectories();
     setupCollections();
     createWindow();
+
+    protocol.handle('mediahandler', async (request) => {
+      const url = request.url.split('//');
+      const handlerType = url[1];
+      const handlerValues = url.slice(2);
+
+      let src;
+      switch (handlerType) {
+        case 'thumbnail':
+          const [id] = handlerValues;
+          const projectsDir = getProjectsDir();
+          src = path.join(projectsDir, id, 'thumbnail.jpg');
+          break;
+        default:
+          src = '';
+      }
+
+      console.log("@@ mediahandler");
+      console.log(`src: ${src}`);
+
+      return net.fetch(`file://${src}`);
+    });
+
     app.on('activate', () => {
       if (mainWindow === null) createWindow();
     });

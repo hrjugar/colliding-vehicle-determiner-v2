@@ -1,7 +1,12 @@
-import { BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, dialog, ipcMain, nativeImage } from "electron";
 import { db } from "../db";
-import { Accident, AccidentInput } from "../../types";
+import { Accident, AccidentInput, Setting } from "../../types";
 import { formatDateTimeToText } from "../util";
+import fs from "fs";
+import fsExtra from "fs-extra";
+import { tempDir } from "../directories";
+import path from "path";
+import { getProjectsDir } from "./settings";
 
 const initAccidentsTable = () => {
   db
@@ -26,6 +31,25 @@ const initAccidentsHandlers = () => {
     return db.prepare(`SELECT * FROM accidents WHERE id = ?`).get(id) as Accident;
   });
 
+  ipcMain.handle('accidents-find', async (_) => {
+    const { canceled, filePaths } = await dialog.showOpenDialog({
+      filters: [
+        { name: 'MP4 Files', extensions: ['mp4'] }
+      ]
+    });
+
+    if (canceled) {
+      return null;
+    }
+
+    const [ filePath ] = filePaths;
+    const fileIcon = await nativeImage.createThumbnailFromPath(filePath, { width: 272, height: 272 });
+    const thumbnail = fileIcon.toJPEG(100);
+    fs.writeFileSync(path.join(tempDir, 'thumbnail.jpg'), thumbnail);
+
+    return filePath;
+  })
+
   ipcMain.handle('accidents-add-one', (_, accidentInput: AccidentInput) => {
     const currentDateTimeText = formatDateTimeToText(new Date());
 
@@ -37,6 +61,15 @@ const initAccidentsHandlers = () => {
       .prepare(`SELECT * FROM accidents WHERE id = ?`)
       .get(statement.lastInsertRowid) as Accident;
 
+    const projectsDir = getProjectsDir();
+    const projectDir = path.join(projectsDir, newAccident.id.toString());
+
+    fs.mkdirSync(projectDir);
+    fsExtra.moveSync(
+      path.join(tempDir, 'thumbnail.jpg'), 
+      path.join(projectDir, 'thumbnail.jpg')
+    );
+
     BrowserWindow.getAllWindows().forEach((win) => {
       win.webContents.send('accident-change', newAccident);
     })
@@ -44,6 +77,10 @@ const initAccidentsHandlers = () => {
 
   ipcMain.handle('accidents-delete-one', (_, id: number) => {
     db.prepare(`DELETE FROM accidents WHERE id = ?`).run(id);
+
+    const projectsDir = getProjectsDir();
+    const projectDir = path.join(projectsDir, id.toString());
+    fs.rmdirSync(projectDir, { recursive: true });
 
     BrowserWindow.getAllWindows().forEach((win) => {
       win.webContents.send('accident-delete', id);

@@ -78,3 +78,9 @@ export const setupSettings = () => {
   initSettingsTable();
   initSettingsHandlers();
 }
+
+export const getProjectsDir = () => {
+  return (
+    db.prepare(`SELECT * FROM settings WHERE name = 'projectsDir'`).get() as Setting
+  ).value as string;
+}
