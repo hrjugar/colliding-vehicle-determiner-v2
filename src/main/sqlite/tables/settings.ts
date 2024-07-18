@@ -27,7 +27,7 @@ const initSettingsTable = () => {
 }
 
 const initSettingsHandlers = () => {
-  ipcMain.handle('db-settings-get', () => {
+  ipcMain.handle('settings-get', () => {
     const settingsArray = db.prepare(`SELECT name, value FROM settings`).all() as Setting[];
 
     let layoutSetting: LayoutSettingValue = 'grid';
@@ -57,7 +57,7 @@ const initSettingsHandlers = () => {
     return settingsJson;
   });
 
-  ipcMain.handle('db-settings-set', (_, setting: Setting) => {
+  ipcMain.handle('settings-set', (_, setting: Setting) => {
 
     db
       .prepare(`INSERT OR REPLACE INTO settings (name, value) VALUES (?, ?)`)

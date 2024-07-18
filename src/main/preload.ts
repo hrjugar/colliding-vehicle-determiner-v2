@@ -31,10 +31,10 @@ const electronHandler = {
   db: {
     settings: {
       get(): Promise<Settings> {
-        return ipcRenderer.invoke('db-settings-get');
+        return ipcRenderer.invoke('settings-get');
       },
       set(setting: Setting) {
-        return ipcRenderer.invoke('db-settings-set', setting);
+        return ipcRenderer.invoke('settings-set', setting);
       },
       onChange(callback: (setting: Setting) => void) {
         const listener = (_: IpcRendererEvent, setting: Setting) => callback(setting);
@@ -47,16 +47,16 @@ const electronHandler = {
     },
     accidents: {
       getAll(): Promise<Accident[]> {
-        return ipcRenderer.invoke('db-accidents-get-all'); 
+        return ipcRenderer.invoke('accidents-get-all'); 
       },
       getOne(id: number): Promise<Accident> {
-        return ipcRenderer.invoke('db-accidents-get-one', id);
+        return ipcRenderer.invoke('accidents-get-one', id);
       },
       add(accidentInput: AccidentInput) {
-        return ipcRenderer.invoke('db-accidents-add-one', accidentInput);
+        return ipcRenderer.invoke('accidents-add-one', accidentInput);
       },
       deleteOne(id: number) {
-        return ipcRenderer.invoke('db-accidents-delete-one', id);
+        return ipcRenderer.invoke('accidents-delete-one', id);
       },
       onChange(callback: (accident: Accident) => void) {
         const listener = (_: IpcRendererEvent, accident: Accident) => callback(accident);

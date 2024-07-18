@@ -18,15 +18,15 @@ const initAccidentsTable = () => {
 }
 
 const initAccidentsHandlers = () => {
-  ipcMain.handle('db-accidents-get-all', () => {
+  ipcMain.handle('accidents-get-all', () => {
     return db.prepare(`SELECT * FROM accidents`).all() as Accident[];
   });
 
-  ipcMain.handle('db-accidents-get-one', (_, id: number) => {
+  ipcMain.handle('accidents-get-one', (_, id: number) => {
     return db.prepare(`SELECT * FROM accidents WHERE id = ?`).get(id) as Accident;
   });
 
-  ipcMain.handle('db-accidents-add-one', (_, accidentInput: AccidentInput) => {
+  ipcMain.handle('accidents-add-one', (_, accidentInput: AccidentInput) => {
     const currentDateTimeText = formatDateTimeToText(new Date());
 
     const statement = db
@@ -42,7 +42,7 @@ const initAccidentsHandlers = () => {
     })
   });
 
-  ipcMain.handle('db-accidents-delete-one', (_, id: number) => {
+  ipcMain.handle('accidents-delete-one', (_, id: number) => {
     db.prepare(`DELETE FROM accidents WHERE id = ?`).run(id);
 
     BrowserWindow.getAllWindows().forEach((win) => {
