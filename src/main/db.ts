@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import Database from "better-sqlite3";
-import { dbDir } from "../directories";
+import { dbDir } from "./directories";
 
 const dbName = 'cvd.sqlite3';
 

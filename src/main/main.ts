@@ -5,8 +5,9 @@ import path from 'path';
 import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import { db, setupDatabase } from './sqlite';
 import { setupDirectories } from './directories';
+import { setupCollections } from './collections';
+import { db } from './db';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -88,7 +89,7 @@ app
   .whenReady()
   .then(() => {
     setupDirectories();
-    setupDatabase();
+    setupCollections();
     createWindow();
     app.on('activate', () => {
       if (mainWindow === null) createWindow();

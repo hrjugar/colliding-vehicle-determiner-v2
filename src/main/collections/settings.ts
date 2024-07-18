@@ -1,7 +1,7 @@
 import { BrowserWindow, ipcMain } from "electron";
 import { db } from "../db";
-import { CollisionStatusSettingValue, LayoutSettingValue, OrderSettingValue, ProjectsDirSettingValue, Setting, Settings, SortBySettingValue } from "../../../types";
-import { defaultProjectsDir } from "../../directories";
+import { CollisionStatusSettingValue, LayoutSettingValue, OrderSettingValue, ProjectsDirSettingValue, Setting, Settings, SortBySettingValue } from "../../types";
+import { defaultProjectsDir } from "../directories";
 
 const initSettingsTable = () => {
   db.prepare(`
