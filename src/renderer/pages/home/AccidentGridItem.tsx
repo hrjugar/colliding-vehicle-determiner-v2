@@ -34,10 +34,7 @@ export default function AccidentGridItem({ accident, index } : AccidentGridItemP
       navigate(`/accident/${accident.id}`);
     } else {
       const singleSelectorKey = os === "darwin" ? "metaKey" : "ctrlKey";
-      
-      if (e[singleSelectorKey] || e.shiftKey) {
-        selectItems(index, e.shiftKey);
-      } 
+      selectItems(index, e.shiftKey, !e[singleSelectorKey]);
     }
   };
 

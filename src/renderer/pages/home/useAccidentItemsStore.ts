@@ -5,7 +5,7 @@ interface AccidentItemsStore {
   selectedItemIndexes: Set<number>,
   lastSelectedItemIndex: number,
   lastSelectedRangeItemIndex: number,
-  selectItems: (index: number, isRange: boolean) => void,
+  selectItems: (index: number, isRange: boolean, isSelectionReset: boolean) => void,
   unselectAllItems: () => void,
 }
 
@@ -14,7 +14,7 @@ export const useAccidentItemsStore = create<AccidentItemsStore>((set, get) => ({
   lastSelectedItemIndex: -1,
   lastSelectedRangeItemIndex: -1,
 
-  selectItems(index, isRange = false) {
+  selectItems(index, isRange, isSelectionReset) {
     if (isRange) {
       set(
         produce((state: AccidentItemsStore) => {
@@ -48,8 +48,12 @@ export const useAccidentItemsStore = create<AccidentItemsStore>((set, get) => ({
     } else {
       set(
         produce((state: AccidentItemsStore) => {
-          if (state.selectedItemIndexes.has(index)) {
-            state.selectedItemIndexes.delete(index);
+          if (isSelectionReset) {
+            state.selectedItemIndexes.clear();
+            state.selectedItemIndexes.add(index);
+            state.lastSelectedItemIndex = index;
+          } else if (state.selectedItemIndexes.has(index)) {
+              state.selectedItemIndexes.delete(index);
           } else {
             state.selectedItemIndexes.add(index);
             state.lastSelectedItemIndex = index;
@@ -59,8 +63,6 @@ export const useAccidentItemsStore = create<AccidentItemsStore>((set, get) => ({
         })
       );
     }
-
-    console.log(`new lastSelectedItemIndex: ${get().lastSelectedItemIndex}`);
   },
 
   unselectAllItems() {
