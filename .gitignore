@@ -21,6 +21,7 @@ node_modules
 release/app/dist
 release/app/db
 release/app/projects
+release/app/temp
 release/build
 .erb/dll
 

@@ -5,7 +5,7 @@ import path from 'path';
 import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import { setupDirectories } from './directories';
+import { clearTempDir, setupDirectories } from './directories';
 import { setupCollections } from './collections';
 import { db } from './db';
 
@@ -83,6 +83,12 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
+});
+
+app.on('before-quit', () => {
+  // NOTE: This will not work when app is closed through Windows shut down or log out.
+  // TODO; Find a way to clear temp dir on Windows shut down or log out.
+  clearTempDir();
 });
 
 app
