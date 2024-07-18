@@ -6,6 +6,7 @@ import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import { db, setupDatabase } from './sqlite';
+import { setupDirectories } from './directories';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -86,6 +87,7 @@ app.on('window-all-closed', () => {
 app
   .whenReady()
   .then(() => {
+    setupDirectories();
     setupDatabase();
     createWindow();
     app.on('activate', () => {

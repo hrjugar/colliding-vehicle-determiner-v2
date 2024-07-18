@@ -1,13 +1,7 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { BrowserWindow, ipcMain } from "electron";
 import { db } from "../db";
 import { CollisionStatusSettingValue, LayoutSettingValue, OrderSettingValue, ProjectsDirSettingValue, Setting, Settings, SortBySettingValue } from "../../../types";
-import path from "path";
-import webpackPaths from "../../../../.erb/configs/webpack.paths";
-
-let defaultProjectsDir =
-  process.env.NODE_ENV === 'development' ?
-    path.join(webpackPaths.appPath, 'projects') :
-    path.join(app.getPath('documents'), 'Colliding Vehicle Determiner', 'Projects');
+import { defaultProjectsDir } from "../../directories";
 
 const initSettingsTable = () => {
   db.prepare(`
@@ -70,7 +64,6 @@ const initSettingsHandlers = () => {
   });
 
   ipcMain.handle('settings-set', (_, setting: Setting) => {
-
     db
       .prepare(`INSERT OR REPLACE INTO settings (name, value) VALUES (?, ?)`)
       .run(setting.name, setting.value);
