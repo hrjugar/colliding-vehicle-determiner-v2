@@ -1,6 +1,13 @@
-import { BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
 import { db } from "../db";
-import { CollisionStatusSettingValue, LayoutSettingValue, OrderSettingValue, Setting, Settings, SortBySettingValue } from "../../../types";
+import { CollisionStatusSettingValue, LayoutSettingValue, OrderSettingValue, ProjectsDirSettingValue, Setting, Settings, SortBySettingValue } from "../../../types";
+import path from "path";
+import webpackPaths from "../../../../.erb/configs/webpack.paths";
+
+let defaultProjectsDir =
+  process.env.NODE_ENV === 'development' ?
+    path.join(webpackPaths.appPath, 'projects') :
+    path.join(app.getPath('documents'), 'Colliding Vehicle Determiner', 'Projects');
 
 const initSettingsTable = () => {
   db.prepare(`
@@ -21,7 +28,8 @@ const initSettingsTable = () => {
         ('sortBy', 'date'),
         ('order', 'desc'),
         ('collisionStatus', 'all'),
-        ('layout', 'grid')
+        ('layout', 'grid'),
+        ('projectsDir', '${defaultProjectsDir}')
   `)
   .run();
 }
@@ -30,28 +38,32 @@ const initSettingsHandlers = () => {
   ipcMain.handle('settings-get', () => {
     const settingsArray = db.prepare(`SELECT name, value FROM settings`).all() as Setting[];
 
-    let layoutSetting: LayoutSettingValue = 'grid';
-    let sortBySetting: SortBySettingValue = 'date';
-    let orderSetting: OrderSettingValue = 'desc';
-    let collisionStatusSetting: CollisionStatusSettingValue = 'all';
+    let layout: LayoutSettingValue = 'grid';
+    let sortBy: SortBySettingValue = 'date';
+    let order: OrderSettingValue = 'desc';
+    let collisionStatus: CollisionStatusSettingValue = 'all';
+    let projectsDir: ProjectsDirSettingValue = defaultProjectsDir;
 
     for (const setting of settingsArray) {
       if (setting.name === 'layout') {
-        layoutSetting = setting.value;
+        layout = setting.value;
       } else if (setting.name === 'sortBy') {
-        sortBySetting = setting.value;
+        sortBy = setting.value;
       } else if (setting.name === 'order') {
-        orderSetting = setting.value;
+        order = setting.value;
       } else if (setting.name === 'collisionStatus') {
-        collisionStatusSetting = setting.value;
+        collisionStatus = setting.value;
+      } else if (setting.name === 'projectsDir') {
+        projectsDir = setting.value;
       }
     }
 
     let settingsJson: Settings = {
-      layout: layoutSetting,
-      sortBy: sortBySetting,
-      order: orderSetting,
-      collisionStatus: collisionStatusSetting,
+      layout,
+      sortBy,
+      order,
+      collisionStatus,
+      projectsDir,
     };
 
     return settingsJson;
