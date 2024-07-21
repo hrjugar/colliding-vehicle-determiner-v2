@@ -1,10 +1,7 @@
-import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
 import { Accident } from "../../../types";
 import { convertToRelativeDate } from "../../utils/date";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
-import { useAccidentsStore } from "../../stores/useAccidentsStore";
 import { useOsStore } from "../../stores/useOsStore";
 import { useAccidentItemsStore } from "./useAccidentItemsStore";
 
