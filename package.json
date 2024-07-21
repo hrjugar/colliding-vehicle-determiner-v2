@@ -1,4 +1,5 @@
 {
+  "name": "colliding-vehicle-determiner",
   "license": "MIT",
   "main": "./src/main/main.ts",
   "scripts": {

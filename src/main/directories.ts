@@ -12,7 +12,7 @@ export const defaultProjectsDir =
 export const tempDir =
   process.env.NODE_ENV === 'development' ?
     path.join(webpackPaths.appPath, 'temp') :
-    app.getPath('temp');
+    path.join(app.getPath('temp'), app.getName());
 
 export const dbDir =
   process.env.NODE_ENV === 'development' ?
