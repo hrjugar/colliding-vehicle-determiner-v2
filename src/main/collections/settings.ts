@@ -2,6 +2,7 @@ import { BrowserWindow, ipcMain } from "electron";
 import { db } from "../db";
 import { CollisionStatusSettingValue, LayoutSettingValue, OrderSettingValue, ProjectsDirSettingValue, Setting, Settings, SortBySettingValue } from "../../types";
 import { DEFAULT_PROJECTS_DIR } from "../directories";
+import { CHANNEL_SETTING_CHANGE, CHANNEL_SETTINGS_GET, CHANNEL_SETTINGS_SET } from "../channels";
 
 const initSettingsTable = () => {
   db.prepare(`
@@ -29,7 +30,7 @@ const initSettingsTable = () => {
 }
 
 const initSettingsHandlers = () => {
-  ipcMain.handle('settings-get', () => {
+  ipcMain.handle(CHANNEL_SETTINGS_GET, () => {
     const settingsArray = db.prepare(`SELECT name, value FROM settings`).all() as Setting[];
 
     let layout: LayoutSettingValue = 'grid';
@@ -63,13 +64,13 @@ const initSettingsHandlers = () => {
     return settingsJson;
   });
 
-  ipcMain.handle('settings-set', (_, setting: Setting) => {
+  ipcMain.handle(CHANNEL_SETTINGS_SET, (_, setting: Setting) => {
     db
       .prepare(`INSERT OR REPLACE INTO settings (name, value) VALUES (?, ?)`)
       .run(setting.name, setting.value);
 
     BrowserWindow.getAllWindows().forEach((win) => {
-      win.webContents.send('setting-change', setting);
+      win.webContents.send(CHANNEL_SETTING_CHANGE, setting);
     });
   });
 }

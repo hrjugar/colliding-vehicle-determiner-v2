@@ -7,6 +7,7 @@ import fsExtra from "fs-extra";
 import { TEMP_DIR } from "../directories";
 import path from "path";
 import { getProjectsDir } from "./settings";
+import { CHANNEL_ACCIDENT_DELETE, CHANNEL_ACCIDENTS_ADD_ONE, CHANNEL_ACCIDENTS_DELETE_ONE, CHANNEL_ACCIDENTS_FIND, CHANNEL_ACCIDENTS_GET_ALL, CHANNEL_ACCIDENTS_GET_ONE } from "../channels";
 
 const initAccidentsTable = () => {
   db
@@ -23,15 +24,15 @@ const initAccidentsTable = () => {
 }
 
 const initAccidentsHandlers = () => {
-  ipcMain.handle('accidents-get-all', () => {
+  ipcMain.handle(CHANNEL_ACCIDENTS_GET_ALL, () => {
     return db.prepare(`SELECT * FROM accidents`).all() as Accident[];
   });
 
-  ipcMain.handle('accidents-get-one', (_, id: number) => {
+  ipcMain.handle(CHANNEL_ACCIDENTS_GET_ONE, (_, id: number) => {
     return db.prepare(`SELECT * FROM accidents WHERE id = ?`).get(id) as Accident;
   });
 
-  ipcMain.handle('accidents-find', async (_) => {
+  ipcMain.handle(CHANNEL_ACCIDENTS_FIND, async (_) => {
     const { canceled, filePaths } = await dialog.showOpenDialog({
       filters: [
         { name: 'MP4 Files', extensions: ['mp4'] }
@@ -50,7 +51,7 @@ const initAccidentsHandlers = () => {
     return filePath;
   })
 
-  ipcMain.handle('accidents-add-one', (_, accidentInput: AccidentInput) => {
+  ipcMain.handle(CHANNEL_ACCIDENTS_ADD_ONE, (_, accidentInput: AccidentInput) => {
     const currentDateTimeText = formatDateTimeToText(new Date());
 
     const statement = db
@@ -75,7 +76,7 @@ const initAccidentsHandlers = () => {
     })
   });
 
-  ipcMain.handle('accidents-delete-one', (_, id: number) => {
+  ipcMain.handle(CHANNEL_ACCIDENTS_DELETE_ONE, (_, id: number) => {
     db.prepare(`DELETE FROM accidents WHERE id = ?`).run(id);
 
     const projectsDir = getProjectsDir();
@@ -83,7 +84,7 @@ const initAccidentsHandlers = () => {
     fs.rmdirSync(projectDir, { recursive: true });
 
     BrowserWindow.getAllWindows().forEach((win) => {
-      win.webContents.send('accident-delete', id);
+      win.webContents.send(CHANNEL_ACCIDENT_DELETE, id);
     })
   });
 }

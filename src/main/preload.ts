@@ -2,6 +2,7 @@
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 import { Accident, AccidentInput, Setting, Settings } from '../types';
+import { CHANNEL_ACCIDENT_CHANGE, CHANNEL_ACCIDENT_DELETE, CHANNEL_ACCIDENTS_ADD_ONE, CHANNEL_ACCIDENTS_DELETE_ONE, CHANNEL_ACCIDENTS_FIND, CHANNEL_ACCIDENTS_GET_ALL, CHANNEL_ACCIDENTS_GET_ONE, CHANNEL_ADD_MODAL_INITIAL_FILE_NAME_GET, CHANNEL_ADD_MODAL_WINDOW_CLOSE, CHANNEL_ADD_MODAL_WINDOW_OPEN, CHANNEL_OS_GET, CHANNEL_SETTING_CHANGE, CHANNEL_SETTINGS_GET, CHANNEL_SETTINGS_SET } from './channels';
 
 // export type Channels = 'ipc-example';
 
@@ -25,67 +26,67 @@ const electronHandler = {
   // },
   os: {
     get(): Promise<NodeJS.Platform> {
-      return ipcRenderer.invoke('os-get');
+      return ipcRenderer.invoke(CHANNEL_OS_GET);
     }
   },
   addModal: {
     async open(fileName: string) {
-      ipcRenderer.send('add-modal-window-open', fileName);
+      ipcRenderer.send(CHANNEL_ADD_MODAL_WINDOW_OPEN, fileName);
     },
     async close() {
-      ipcRenderer.send('add-modal-window-close');
+      ipcRenderer.send(CHANNEL_ADD_MODAL_WINDOW_CLOSE);
     },
     getInitialFileName(): Promise<string> {
-      return ipcRenderer.invoke('add-modal-initial-file-name-get');
+      return ipcRenderer.invoke(CHANNEL_ADD_MODAL_INITIAL_FILE_NAME_GET);
     }
   },
   db: {
     settings: {
       get(): Promise<Settings> {
-        return ipcRenderer.invoke('settings-get');
+        return ipcRenderer.invoke(CHANNEL_SETTINGS_GET);
       },
       set(setting: Setting) {
-        return ipcRenderer.invoke('settings-set', setting);
+        return ipcRenderer.invoke(CHANNEL_SETTINGS_SET, setting);
       },
       onChange(callback: (setting: Setting) => void) {
         const listener = (_: IpcRendererEvent, setting: Setting) => callback(setting);
-        ipcRenderer.on('setting-change', listener);
+        ipcRenderer.on(CHANNEL_SETTING_CHANGE, listener);
 
         return () => {
-          ipcRenderer.removeListener('setting-change', listener);
+          ipcRenderer.removeListener(CHANNEL_SETTING_CHANGE, listener);
         }
       },
     },
     accidents: {
       getAll(): Promise<Accident[]> {
-        return ipcRenderer.invoke('accidents-get-all'); 
+        return ipcRenderer.invoke(CHANNEL_ACCIDENTS_GET_ALL); 
       },
       getOne(id: number): Promise<Accident> {
-        return ipcRenderer.invoke('accidents-get-one', id);
+        return ipcRenderer.invoke(CHANNEL_ACCIDENTS_GET_ONE, id);
       },
       find(): Promise<string | null> {
-        return ipcRenderer.invoke('accidents-find');
+        return ipcRenderer.invoke(CHANNEL_ACCIDENTS_FIND);
       },
       add(accidentInput: AccidentInput) {
-        return ipcRenderer.invoke('accidents-add-one', accidentInput);
+        return ipcRenderer.invoke(CHANNEL_ACCIDENTS_ADD_ONE, accidentInput);
       },
       deleteOne(id: number) {
-        return ipcRenderer.invoke('accidents-delete-one', id);
+        return ipcRenderer.invoke(CHANNEL_ACCIDENTS_DELETE_ONE, id);
       },
       onChange(callback: (accident: Accident) => void) {
         const listener = (_: IpcRendererEvent, accident: Accident) => callback(accident);
-        ipcRenderer.on('accident-change', listener);
+        ipcRenderer.on(CHANNEL_ACCIDENT_CHANGE, listener);
 
         return () => {
-          ipcRenderer.removeListener('accident-change', listener);
+          ipcRenderer.removeListener(CHANNEL_ACCIDENT_CHANGE, listener);
         }
       },
       onDelete(callback: (id: number) => void) {
         const listener = (_: IpcRendererEvent, id: number) => callback(id);
-        ipcRenderer.on('accident-delete', listener);
+        ipcRenderer.on(CHANNEL_ACCIDENT_DELETE, listener);
 
         return () => {
-          ipcRenderer.removeListener('accident-delete', listener);
+          ipcRenderer.removeListener(CHANNEL_ACCIDENT_DELETE, listener);
         }
       }
     }

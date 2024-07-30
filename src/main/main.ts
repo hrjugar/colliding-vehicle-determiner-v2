@@ -9,6 +9,7 @@ import { clearTempDir, getAssetPath, setupDirectories } from './directories';
 import { setupCollections } from './collections';
 import { db } from './db';
 import { getProjectsDir } from './collections/settings';
+import { CHANNEL_ADD_MODAL_INITIAL_FILE_NAME_GET, CHANNEL_ADD_MODAL_WINDOW_CLOSE, CHANNEL_ADD_MODAL_WINDOW_OPEN, CHANNEL_OS_GET } from './channels';
 
 let mainWindow: BrowserWindow | null = null;
 let addModalWindow: BrowserWindow | null = null;
@@ -110,24 +111,23 @@ const createAddModalWindow = async () => {
   });
 };
 
+ipcMain.handle(CHANNEL_OS_GET, () => os.platform());
 
-ipcMain.handle('os-get', () => os.platform());
-
-ipcMain.on('add-modal-window-open', (_, fileName) => {
+ipcMain.on(CHANNEL_ADD_MODAL_WINDOW_OPEN, (_, fileName) => {
   if (!addModalWindow) {
     addModalInitialFileName = fileName;
     createAddModalWindow();
   }
 });
 
-ipcMain.on('add-modal-window-close', () => {
+ipcMain.on(CHANNEL_ADD_MODAL_WINDOW_CLOSE, () => {
   if (addModalWindow) {
     addModalInitialFileName = '';
     addModalWindow.close();
   }
 });
 
-ipcMain.handle('add-modal-initial-file-name-get', () => {
+ipcMain.handle(CHANNEL_ADD_MODAL_INITIAL_FILE_NAME_GET, () => {
   return addModalInitialFileName;
 });
 
