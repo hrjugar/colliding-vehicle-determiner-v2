@@ -5,34 +5,24 @@ import path from 'path';
 import { app, BrowserWindow, ipcMain, net, protocol, shell } from 'electron';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import { clearTempDir, setupDirectories } from './directories';
+import { clearTempDir, getAssetPath, setupDirectories } from './directories';
 import { setupCollections } from './collections';
 import { db } from './db';
 import { getProjectsDir } from './collections/settings';
 
 let mainWindow: BrowserWindow | null = null;
+let modalWindow: BrowserWindow | null = null;
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
 }
 
-const isDebug =
-  process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
-
-if (isDebug) {
+if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
   require('electron-debug')();
 }
 
-const createWindow = async () => {
-  const RESOURCES_PATH = app.isPackaged
-    ? path.join(process.resourcesPath, 'assets')
-    : path.join(__dirname, '../../assets');
-
-  const getAssetPath = (...paths: string[]): string => {
-    return path.join(RESOURCES_PATH, ...paths);
-  };
-
+const createMainWindow = async () => {
   mainWindow = new BrowserWindow({
     show: false,
     minWidth: 800,
@@ -51,7 +41,7 @@ const createWindow = async () => {
     },
   });
 
-  mainWindow.loadURL(resolveHtmlPath('index.html'));
+  mainWindow.loadURL(resolveHtmlPath('index.html', 'main'));
 
   mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {
@@ -77,7 +67,61 @@ const createWindow = async () => {
   });
 };
 
+const createModalWindow = async () => {
+  modalWindow = new BrowserWindow({
+    parent: mainWindow!,
+    modal: true,
+    show: false,
+    minWidth: 800,
+    minHeight: 600,
+    icon: getAssetPath('icon.png'),
+    titleBarStyle: 'hidden',
+    trafficLightPosition: {
+      x: 24,
+      y: 20,
+    },
+    webPreferences: {
+      preload: app.isPackaged
+        ? path.join(__dirname, 'preload.js')
+        : path.join(__dirname, '../../.erb/dll/preload.js'),
+    },
+  });
+
+  modalWindow.loadURL(resolveHtmlPath('index.html', "modal"));
+
+  modalWindow.on('ready-to-show', () => {
+    if (!modalWindow) {
+      throw new Error('"secondaryWindow" is not defined');
+    }
+
+    modalWindow.show();
+  });
+
+  modalWindow.on('closed', () => {
+    modalWindow = null;
+  });
+
+  modalWindow.webContents.setWindowOpenHandler((edata) => {
+    shell.openExternal(edata.url);
+    return { action: 'deny' };
+  });
+};
+
+
 ipcMain.handle('os-get', () => os.platform());
+
+ipcMain.on('modal-window-open', () => {
+  console.log("hello world");
+  if (!modalWindow) {
+    createModalWindow();
+  }
+});
+
+ipcMain.on('modal-window-close', () => {
+  if (modalWindow) {
+    modalWindow.close();
+  }
+});
 
 app.on('window-all-closed', () => {
   db.close();
@@ -87,6 +131,14 @@ app.on('window-all-closed', () => {
 });
 
 app.on('before-quit', () => {
+  if (mainWindow) {
+    mainWindow.close();
+  }
+
+  if (modalWindow) {
+    modalWindow.close();
+  }
+
   // NOTE: This will not work when app is closed through Windows shut down or log out.
   // TODO; Find a way to clear temp dir on Windows shut down or log out.
   clearTempDir();
@@ -97,7 +149,7 @@ app
   .then(() => {
     setupDirectories();
     setupCollections();
-    createWindow();
+    createMainWindow();
 
     protocol.handle('mediahandler', async (request) => {
       const url = request.url.split('//');
@@ -119,7 +171,7 @@ app
     });
 
     app.on('activate', () => {
-      if (mainWindow === null) createWindow();
+      if (mainWindow === null) createMainWindow();
     });
   })
   .catch(console.log);

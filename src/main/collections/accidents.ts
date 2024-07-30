@@ -4,7 +4,7 @@ import { Accident, AccidentInput, Setting } from "../../types";
 import { formatDateTimeToText } from "../util";
 import fs from "fs";
 import fsExtra from "fs-extra";
-import { tempDir } from "../directories";
+import { TEMP_DIR } from "../directories";
 import path from "path";
 import { getProjectsDir } from "./settings";
 
@@ -45,7 +45,7 @@ const initAccidentsHandlers = () => {
     const [ filePath ] = filePaths;
     const fileIcon = await nativeImage.createThumbnailFromPath(filePath, { width: 272, height: 272 });
     const thumbnail = fileIcon.toJPEG(100);
-    fs.writeFileSync(path.join(tempDir, 'thumbnail.jpg'), thumbnail);
+    fs.writeFileSync(path.join(TEMP_DIR, 'thumbnail.jpg'), thumbnail);
 
     return filePath;
   })
@@ -66,7 +66,7 @@ const initAccidentsHandlers = () => {
 
     fs.mkdirSync(projectDir);
     fsExtra.moveSync(
-      path.join(tempDir, 'thumbnail.jpg'), 
+      path.join(TEMP_DIR, 'thumbnail.jpg'), 
       path.join(projectDir, 'thumbnail.jpg')
     );
 

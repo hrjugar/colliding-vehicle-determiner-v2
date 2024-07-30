@@ -28,6 +28,14 @@ const electronHandler = {
       return ipcRenderer.invoke('os-get');
     }
   },
+  modalWindow: {
+    async open() {
+      ipcRenderer.send('modal-window-open');
+    },
+    async close() {
+      ipcRenderer.send('modal-window-close');
+    }
+  },
   db: {
     settings: {
       get(): Promise<Settings> {

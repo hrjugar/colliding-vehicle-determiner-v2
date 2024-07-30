@@ -1,7 +1,7 @@
 import { BrowserWindow, ipcMain } from "electron";
 import { db } from "../db";
 import { CollisionStatusSettingValue, LayoutSettingValue, OrderSettingValue, ProjectsDirSettingValue, Setting, Settings, SortBySettingValue } from "../../types";
-import { defaultProjectsDir } from "../directories";
+import { DEFAULT_PROJECTS_DIR } from "../directories";
 
 const initSettingsTable = () => {
   db.prepare(`
@@ -23,7 +23,7 @@ const initSettingsTable = () => {
         ('order', 'desc'),
         ('collisionStatus', 'all'),
         ('layout', 'grid'),
-        ('projectsDir', '${defaultProjectsDir}')
+        ('projectsDir', '${DEFAULT_PROJECTS_DIR}')
   `)
   .run();
 }
@@ -36,7 +36,7 @@ const initSettingsHandlers = () => {
     let sortBy: SortBySettingValue = 'date';
     let order: OrderSettingValue = 'desc';
     let collisionStatus: CollisionStatusSettingValue = 'all';
-    let projectsDir: ProjectsDirSettingValue = defaultProjectsDir;
+    let projectsDir: ProjectsDirSettingValue = DEFAULT_PROJECTS_DIR;
 
     for (const setting of settingsArray) {
       if (setting.name === 'layout') {
