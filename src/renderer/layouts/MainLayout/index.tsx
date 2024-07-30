@@ -1,8 +1,8 @@
 import { Outlet } from "react-router-dom";
-import TopNavBar from "../components/TopNavBar";
-import SideNavBar from "../components/SideNavBar";
+import TopNavBar from "./TopNavBar";
+import SideNavBar from "./SideNavBar";
 
-export default function Layout() {
+export default function MainLayout() {
   return (
     <>
       <SideNavBar />

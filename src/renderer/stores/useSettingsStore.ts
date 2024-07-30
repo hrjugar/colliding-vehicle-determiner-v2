@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { Setting, Settings } from "../../types";
 import { produce } from "immer";
+import { DEFAULT_PROJECTS_DIR } from "../../main/directories";
 
 interface SettingsStore {
   settings: Settings;
@@ -13,7 +14,8 @@ export const useSettingsStore = create<SettingsStore>((set) => ({
     layout: 'grid',
     sortBy: 'date',
     order: 'desc',
-    collisionStatus: 'all'
+    collisionStatus: 'all',
+    projectsDir: '',
   },
 
   initSettings: async () => {

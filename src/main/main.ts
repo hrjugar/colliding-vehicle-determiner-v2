@@ -11,7 +11,7 @@ import { db } from './db';
 import { getProjectsDir } from './collections/settings';
 
 let mainWindow: BrowserWindow | null = null;
-let modalWindow: BrowserWindow | null = null;
+let addModalWindow: BrowserWindow | null = null;
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -67,8 +67,8 @@ const createMainWindow = async () => {
   });
 };
 
-const createModalWindow = async () => {
-  modalWindow = new BrowserWindow({
+const createAddModalWindow = async () => {
+  addModalWindow = new BrowserWindow({
     parent: mainWindow!,
     modal: true,
     show: false,
@@ -87,21 +87,21 @@ const createModalWindow = async () => {
     },
   });
 
-  modalWindow.loadURL(resolveHtmlPath('index.html', "modal"));
+  addModalWindow.loadURL(resolveHtmlPath('index.html', "add-modal"));
 
-  modalWindow.on('ready-to-show', () => {
-    if (!modalWindow) {
+  addModalWindow.on('ready-to-show', () => {
+    if (!addModalWindow) {
       throw new Error('"secondaryWindow" is not defined');
     }
 
-    modalWindow.show();
+    addModalWindow.show();
   });
 
-  modalWindow.on('closed', () => {
-    modalWindow = null;
+  addModalWindow.on('closed', () => {
+    addModalWindow = null;
   });
 
-  modalWindow.webContents.setWindowOpenHandler((edata) => {
+  addModalWindow.webContents.setWindowOpenHandler((edata) => {
     shell.openExternal(edata.url);
     return { action: 'deny' };
   });
@@ -110,16 +110,15 @@ const createModalWindow = async () => {
 
 ipcMain.handle('os-get', () => os.platform());
 
-ipcMain.on('modal-window-open', () => {
-  console.log("hello world");
-  if (!modalWindow) {
-    createModalWindow();
+ipcMain.on('add-modal-window-open', () => {
+  if (!addModalWindow) {
+    createAddModalWindow();
   }
 });
 
-ipcMain.on('modal-window-close', () => {
-  if (modalWindow) {
-    modalWindow.close();
+ipcMain.on('add-modal-window-close', () => {
+  if (addModalWindow) {
+    addModalWindow.close();
   }
 });
 
@@ -135,8 +134,8 @@ app.on('before-quit', () => {
     mainWindow.close();
   }
 
-  if (modalWindow) {
-    modalWindow.close();
+  if (addModalWindow) {
+    addModalWindow.close();
   }
 
   // NOTE: This will not work when app is closed through Windows shut down or log out.
