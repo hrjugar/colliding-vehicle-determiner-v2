@@ -29,11 +29,14 @@ const electronHandler = {
     }
   },
   addModal: {
-    async open() {
-      ipcRenderer.send('add-modal-window-open');
+    async open(fileName: string) {
+      ipcRenderer.send('add-modal-window-open', fileName);
     },
     async close() {
       ipcRenderer.send('add-modal-window-close');
+    },
+    getInitialFileName(): Promise<string> {
+      return ipcRenderer.invoke('add-modal-initial-file-name-get');
     }
   },
   db: {

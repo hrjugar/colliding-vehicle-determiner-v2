@@ -12,6 +12,7 @@ import { getProjectsDir } from './collections/settings';
 
 let mainWindow: BrowserWindow | null = null;
 let addModalWindow: BrowserWindow | null = null;
+let addModalInitialFileName = '';
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -72,8 +73,10 @@ const createAddModalWindow = async () => {
     parent: mainWindow!,
     modal: true,
     show: false,
-    minWidth: 800,
-    minHeight: 600,
+    width: 1200,
+    height: 400,
+    minWidth: 1200,
+    minHeight: 400,
     icon: getAssetPath('icon.png'),
     titleBarStyle: 'hidden',
     trafficLightPosition: {
@@ -93,7 +96,7 @@ const createAddModalWindow = async () => {
     if (!addModalWindow) {
       throw new Error('"secondaryWindow" is not defined');
     }
-
+    
     addModalWindow.show();
   });
 
@@ -110,16 +113,22 @@ const createAddModalWindow = async () => {
 
 ipcMain.handle('os-get', () => os.platform());
 
-ipcMain.on('add-modal-window-open', () => {
+ipcMain.on('add-modal-window-open', (_, fileName) => {
   if (!addModalWindow) {
+    addModalInitialFileName = fileName;
     createAddModalWindow();
   }
 });
 
 ipcMain.on('add-modal-window-close', () => {
   if (addModalWindow) {
+    addModalInitialFileName = '';
     addModalWindow.close();
   }
+});
+
+ipcMain.handle('add-modal-initial-file-name-get', () => {
+  return addModalInitialFileName;
 });
 
 app.on('window-all-closed', () => {
