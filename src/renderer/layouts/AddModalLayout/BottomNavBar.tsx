@@ -16,7 +16,7 @@ export default function BottomNavBar() {
   ); 
 
   return (
-    <nav className="w-full h-top-nav flex flex-row justify-between items-center px-6 py-4 border-t border-cool-gray-300">
+    <nav className="sticky bottom-0 w-full min-h-top-nav flex flex-row justify-between items-center px-6 py-4 bg-white border-t border-cool-gray-300">
       <button 
         className="flex flex-row justify-start items-center gap-2 text-cool-gray-500 hover:text-cool-gray-600 disabled:text-cool-gray-200"
         onClick={goToPreviousStep}

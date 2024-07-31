@@ -51,6 +51,9 @@ module.exports = {
       height: {
         'top-nav': '4.5rem',
       },
+      minHeight: {
+        'top-nav': '4.5rem',
+      },
       gridTemplateColumns: {
         'search-results': 'repeat(auto-fill, minmax(272px, 1fr))'
       }

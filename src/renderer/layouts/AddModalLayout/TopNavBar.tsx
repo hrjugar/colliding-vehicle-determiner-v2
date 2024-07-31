@@ -13,7 +13,7 @@ export default function TopNavBar() {
 
   return (
     <nav 
-      className="draggable w-full h-top-nav flex flex-row justify-between items-center px-6 py-4 border-b border-cool-gray-300"
+      className="draggable sticky top-0 w-full min-h-top-nav flex flex-row justify-between items-center px-6 py-4 bg-white border-b border-cool-gray-300"
     >
       {fileName && (
         <>

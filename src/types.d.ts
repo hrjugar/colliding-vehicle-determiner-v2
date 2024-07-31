@@ -30,3 +30,10 @@ export type Setting = {
     value: Settings[K];
   }
 }[keyof Settings];
+
+export interface Time {
+  hours: number;
+  minutes: number;
+  seconds: number;
+  milliseconds: number;
+}

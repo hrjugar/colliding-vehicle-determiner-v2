@@ -2,6 +2,7 @@
 
 import os from 'os';
 import path from 'path';
+import fs from 'fs';
 import { app, BrowserWindow, ipcMain, net, protocol, shell } from 'electron';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
@@ -10,6 +11,7 @@ import { setupCollections } from './collections';
 import { db } from './db';
 import { getProjectsDir } from './collections/settings';
 import { CHANNEL_ADD_MODAL_INITIAL_FILE_NAME_GET, CHANNEL_ADD_MODAL_WINDOW_CLOSE, CHANNEL_ADD_MODAL_WINDOW_OPEN, CHANNEL_OS_GET } from './channels';
+import { Readable } from 'stream';
 
 let mainWindow: BrowserWindow | null = null;
 let addModalWindow: BrowserWindow | null = null;
@@ -23,6 +25,20 @@ if (process.env.NODE_ENV === 'production') {
 if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
   require('electron-debug')();
 }
+
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: 'video',
+    privileges: {
+      standard: true,
+      secure: true,
+      supportFetchAPI: true,
+      corsEnabled: true,
+      stream: true,
+      bypassCSP: true,
+    },
+  }
+]);
 
 const createMainWindow = async () => {
   mainWindow = new BrowserWindow({
@@ -75,9 +91,9 @@ const createAddModalWindow = async () => {
     modal: true,
     show: false,
     width: 1200,
-    height: 400,
+    height: 800,
     minWidth: 1200,
-    minHeight: 400,
+    minHeight: 800,
     icon: getAssetPath('icon.png'),
     titleBarStyle: 'hidden',
     trafficLightPosition: {
@@ -159,6 +175,43 @@ app
     setupCollections();
     createMainWindow();
 
+    protocol.handle('video', async (request) => {
+      // TODO: Remove leading slash for non-MacOS platforms
+      const videoPath = '/' + decodeURIComponent(request.url.replace('video://', ''));
+
+      if (!fs.existsSync(videoPath)) {
+        return new Response('File Not Found', { status: 404 });
+      }
+
+      const stat = fs.statSync(videoPath);
+      const fileSize = stat.size;
+      const range = request.headers.get('Range');
+
+      if (range) {
+        const parts = range.replace(/bytes=/, '').split("-");
+        const start = parseInt(parts[0], 10);
+        const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+        const chunkSize = (end - start) + 1;
+        const file = fs.createReadStream(videoPath, { start, end });
+        const headers = {
+          'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+          'Accept-Ranges': 'bytes',
+          'Content-Length': chunkSize.toString(),
+          'Content-Type': 'video/mp4',
+        };
+
+        return new Response(Readable.toWeb(file) as BodyInit, { status: 206, headers });
+      } else {
+        const headers = {
+          'Content-Length': fileSize.toString(),
+          'Content-Type': 'video/mp4',
+        };
+
+        const file = fs.createReadStream(videoPath);
+        return new Response(Readable.toWeb(file) as BodyInit, { status: 200, headers });
+      }
+    })
+
     protocol.handle('mediahandler', async (request) => {
       const url = request.url.split('//');
       const handlerType = url[1];
@@ -170,6 +223,11 @@ app
           const [id] = handlerValues;
           const projectsDir = getProjectsDir();
           src = path.join(projectsDir, id, 'thumbnail.jpg');
+          break;
+        case 'video':
+          const [videoPath] = handlerValues;
+          console.log(`videoPath: ${videoPath}`);
+          src = videoPath;
           break;
         default:
           src = '';

@@ -27,9 +27,8 @@ export default function AddModalLayout() {
   }, []);
 
   return (
-    <div className="flex-grow flex flex-col justify-start items-stretch">
+    <div className="relative h-screen flex-grow flex flex-col justify-start items-stretch overflow-hidden">
       <TopNavBar />
-      <p>FileName: {fileName}</p>
       {fileName && (
         <>
           <Outlet />
