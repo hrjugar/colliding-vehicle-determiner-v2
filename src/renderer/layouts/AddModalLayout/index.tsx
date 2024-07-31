@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import TopNavBar from "./TopNavBar";
-import BottomNavBar from "./BottomNavBar";
+import StepperControls from "../../components/add-modal/StepperControls";
 import { useAddModalStore } from "../../stores/useAddModalStore";
 import { useShallow } from "zustand/react/shallow";
 import { useEffect } from "react";
@@ -32,7 +32,6 @@ export default function AddModalLayout() {
       {fileName && (
         <>
           <Outlet />
-          <BottomNavBar />
         </>
       )}
     </div>

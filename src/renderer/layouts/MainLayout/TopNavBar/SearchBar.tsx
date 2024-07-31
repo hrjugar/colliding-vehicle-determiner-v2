@@ -36,7 +36,7 @@ export default function SearchBar() {
 
       <input 
         type="text"
-        className="flex-grow bg-transparent placeholder-cool-gray-400 text-cool-gray-400 focus:outline-none text-sm" 
+        className="flex-grow bg-transparent placeholder-cool-gray-400 text-cool-gray-400 text-sm" 
         placeholder="Search" 
         onChange={(e) => setSearchText(e.target.value)}
         value={searchText}

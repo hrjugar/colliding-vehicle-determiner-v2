@@ -1,3 +1,4 @@
+import { createRef, RefObject } from "react";
 import { create } from "zustand";
 
 type AddModalStep = 1 | 2 | 3;
@@ -8,7 +9,7 @@ interface AddModalStore {
   accidentName: string;
   startTime: number;
   endTime: number;
-  duration: number;
+  videoRef: RefObject<HTMLVideoElement>;
   initAddModal: () => Promise<void>;
   initTime: (durationInSeconds: number) => void;
   goToPreviousStep: () => void;
@@ -17,7 +18,6 @@ interface AddModalStore {
   setAccidentName: (accidentName: string) => void;
   setStartTime: (startTime: number) => void;
   setEndTime: (endTime: number) => void;
-  setOriginalEndTime: (originalEndTime: number) => void;
 }
 
 export const useAddModalStore = create<AddModalStore>((set) => ({
@@ -26,14 +26,14 @@ export const useAddModalStore = create<AddModalStore>((set) => ({
   accidentName: '',
   startTime: 0,
   endTime: 0,
-  duration: 0,
+  videoRef: createRef<HTMLVideoElement>(),
 
   async initAddModal() {
     set({ fileName: await window.electron.addModal.getInitialFileName() });
   },
 
   initTime(duration) {
-    set({ endTime: duration, duration });
+    set({ endTime: duration });
   },
 
   goToPreviousStep() { 
@@ -63,8 +63,4 @@ export const useAddModalStore = create<AddModalStore>((set) => ({
   setEndTime(endTime) { 
     set({ endTime }) 
   },
-
-  setOriginalEndTime(originalEndTime) { 
-    set({ duration: originalEndTime }) 
-  }
 }));

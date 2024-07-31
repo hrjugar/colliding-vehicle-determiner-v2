@@ -224,11 +224,6 @@ app
           const projectsDir = getProjectsDir();
           src = path.join(projectsDir, id, 'thumbnail.jpg');
           break;
-        case 'video':
-          const [videoPath] = handlerValues;
-          console.log(`videoPath: ${videoPath}`);
-          src = videoPath;
-          break;
         default:
           src = '';
       }

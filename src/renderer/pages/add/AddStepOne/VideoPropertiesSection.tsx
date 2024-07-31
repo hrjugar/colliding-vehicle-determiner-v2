@@ -4,7 +4,6 @@ import { AddModalField, AddModalFieldInputWrapper, AddModalFieldLabel, AddModalH
 import { useAccidentsStore } from "../../../stores/useAccidentsStore";
 import { useMutation } from "react-query";
 import { RiFolderLine, RiTimeLine } from "@remixicon/react";
-import { convertSecondsToTimeText } from "../../../utils/time";
 import TimeInput from "../../../components/TimeInput";
 
 export default function VideoPropertiesSection() {
@@ -18,7 +17,7 @@ export default function VideoPropertiesSection() {
     setStartTime,
     endTime,
     setEndTime,
-    duration,
+    videoRef
   ] = useAddModalStore(
     useShallow((state) => [
       state.fileName,
@@ -29,7 +28,7 @@ export default function VideoPropertiesSection() {
       state.setStartTime,
       state.endTime,
       state.setEndTime,
-      state.duration,
+      state.videoRef,
     ])
   );
 
@@ -47,13 +46,13 @@ export default function VideoPropertiesSection() {
       <AddModalHeader>Video Properties</AddModalHeader>
 
       <AddModalField>
-        <AddModalFieldLabel htmlFor="videoName">Name</AddModalFieldLabel>
+        <AddModalFieldLabel hasAsterisk htmlFor="videoName">Name</AddModalFieldLabel>
 
         <AddModalFieldInputWrapper htmlFor="videoName">
           <input
             id="videoName"
             type="text" 
-            className="w-full bg-transparent placeholder-gray-400 focus:outline-none"
+            className="w-full bg-transparent placeholder-gray-400"
             placeholder="Enter video name"
             value={accidentName}
             onChange={(e) => setAccidentName(e.target.value)}
@@ -67,14 +66,8 @@ export default function VideoPropertiesSection() {
         <AddModalFieldInputWrapper htmlFor="fileName" className="cursor-pointer" title={fileName}>
           <RiFolderLine className="min-w-[1.125rem] min-h-[1.125rem]" />
           <span className="whitespace-nowrap overflow-hidden overflow-ellipsis">{fileName}</span>
-          <button id="fileName" className="hidden" onClick={() => findAccidentMutation.mutate()} />
+          <button id="fileName" type="button" className="hidden" onClick={() => findAccidentMutation.mutate()} />
         </AddModalFieldInputWrapper>
-      </AddModalField>
-
-      <AddModalField>
-        <AddModalFieldLabel>Duration</AddModalFieldLabel>
-
-        <p className="text-cool-gray-700 text-sm">{convertSecondsToTimeText(duration)}</p>
       </AddModalField>
 
       <AddModalField>
@@ -91,7 +84,7 @@ export default function VideoPropertiesSection() {
 
         <AddModalFieldInputWrapper>
           <RiTimeLine size={18} />
-          <TimeInput time={endTime} setTime={setEndTime} maxTime={duration} />
+          <TimeInput time={endTime} setTime={setEndTime} maxTime={videoRef.current?.duration ?? endTime} />
         </AddModalFieldInputWrapper>
       </AddModalField>
     </AddModalSection>

@@ -5,10 +5,8 @@ export function convertSecondsToTimeText(seconds: number) {
   const milliseconds = Math.round((seconds % 1) * 100);
 
   return `
-    ${hours ? `${hours}h` : ''}
-    ${minutes ? `${minutes}m` : ''}
-    ${remainingSeconds ? `${remainingSeconds}${milliseconds ? `.${milliseconds}` : ''}s` : ''}
-  `
+    ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}
+  `;
 }
 
 export function padZero(num: number, length = 2) {

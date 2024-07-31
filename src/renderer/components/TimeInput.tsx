@@ -1,16 +1,19 @@
 import { useMemo } from "react";
 import { padZero } from "../utils/time";
+import { cn } from "../utils/style";
 
 interface TimeInputProps {
   time: number;
   maxTime: number;
   setTime: (time: number) => void;
+  className?: string;
 }
 
 export default function TimeInput({
   time,
   maxTime,
-  setTime
+  setTime,
+  className
 }: TimeInputProps) {
   const hours = useMemo(() => Math.floor(time / 3600), [time]);
   const minutes = useMemo(() => Math.floor(time % 3600 / 60), [time]);
@@ -18,7 +21,7 @@ export default function TimeInput({
   const milliseconds = useMemo(() => Math.round((time % 1) * 100), [time]);
 
   return (
-    <div className="flex flex-row justify-start items-center">
+    <div className={cn("flex flex-row justify-start items-center", className)}>
       <input
         className="w-[2ch] bg-transparent"
         value={padZero(hours)}

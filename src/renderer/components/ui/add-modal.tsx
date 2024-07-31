@@ -45,8 +45,10 @@ export const AddModalField = forwardRef<
 
 export const AddModalFieldLabel = forwardRef<
   HTMLLabelElement,
-  React.ComponentPropsWithRef<"label">
->(({ className, ...props }, ref) => (
+  React.ComponentPropsWithRef<"label"> & {
+    hasAsterisk?: boolean;
+  }
+>(({ className, hasAsterisk, ...props }, ref) => (
   <label
     ref={ref}
     className={cn(
@@ -54,7 +56,10 @@ export const AddModalFieldLabel = forwardRef<
       className
     )}
     {...props}
-  />
+  >
+    {props.children}
+    {hasAsterisk && <span className="text-red-400 font-black">*</span>}
+  </label>
 ));
 
 export const AddModalFieldInputWrapper = forwardRef<
