@@ -13,6 +13,10 @@
   * {
     @apply select-none;
   }
+
+  input {
+    @apply focus:outline-none;
+  }
 }
 
 @layer components {

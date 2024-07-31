@@ -4,6 +4,8 @@ import { AddModalField, AddModalFieldInputWrapper, AddModalFieldLabel, AddModalH
 import { useAccidentsStore } from "../../../stores/useAccidentsStore";
 import { useMutation } from "react-query";
 import { RiFolderLine, RiTimeLine } from "@remixicon/react";
+import { convertSecondsToTimeText } from "../../../utils/time";
+import TimeInput from "../../../components/TimeInput";
 
 export default function VideoPropertiesSection() {
   const findAccident = useAccidentsStore((state) => state.findAccident);
@@ -12,12 +14,22 @@ export default function VideoPropertiesSection() {
     setFileName,
     accidentName,
     setAccidentName,
+    startTime,
+    setStartTime,
+    endTime,
+    setEndTime,
+    duration,
   ] = useAddModalStore(
     useShallow((state) => [
       state.fileName,
       state.setFileName,
       state.accidentName,
-      state.setAccidentName
+      state.setAccidentName,
+      state.startTime,
+      state.setStartTime,
+      state.endTime,
+      state.setEndTime,
+      state.duration,
     ])
   );
 
@@ -41,7 +53,7 @@ export default function VideoPropertiesSection() {
           <input
             id="videoName"
             type="text" 
-            className="w-full bg-transparent placeholder-gray-300 focus:outline-none"
+            className="w-full bg-transparent placeholder-gray-400 focus:outline-none"
             placeholder="Enter video name"
             value={accidentName}
             onChange={(e) => setAccidentName(e.target.value)}
@@ -62,7 +74,7 @@ export default function VideoPropertiesSection() {
       <AddModalField>
         <AddModalFieldLabel>Duration</AddModalFieldLabel>
 
-        <p>40s</p>
+        <p className="text-cool-gray-700 text-sm">{convertSecondsToTimeText(duration)}</p>
       </AddModalField>
 
       <AddModalField>
@@ -70,6 +82,7 @@ export default function VideoPropertiesSection() {
 
         <AddModalFieldInputWrapper>
           <RiTimeLine size={18} />
+          <TimeInput time={startTime} setTime={setStartTime} maxTime={endTime} />
         </AddModalFieldInputWrapper>
       </AddModalField>
 
@@ -78,6 +91,7 @@ export default function VideoPropertiesSection() {
 
         <AddModalFieldInputWrapper>
           <RiTimeLine size={18} />
+          <TimeInput time={endTime} setTime={setEndTime} maxTime={duration} />
         </AddModalFieldInputWrapper>
       </AddModalField>
     </AddModalSection>

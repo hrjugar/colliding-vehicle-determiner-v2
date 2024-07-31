@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { Time } from "../../types";
 
 type AddModalStep = 1 | 2 | 3;
 
@@ -7,29 +6,34 @@ interface AddModalStore {
   step: AddModalStep;
   fileName: string;
   accidentName: string;
-  startTime: Time;
-  endTime: Time;
-  originalEndTime: Time;
+  startTime: number;
+  endTime: number;
+  duration: number;
   initAddModal: () => Promise<void>;
+  initTime: (durationInSeconds: number) => void;
   goToPreviousStep: () => void;
   goToNextStep: () => void;
   setFileName: (fileName: string) => void;
   setAccidentName: (accidentName: string) => void;
-  setStartTime: (startTime: Time) => void;
-  setEndTime: (endTime: Time) => void;
-  setOriginalEndTime: (originalEndTime: Time) => void;
+  setStartTime: (startTime: number) => void;
+  setEndTime: (endTime: number) => void;
+  setOriginalEndTime: (originalEndTime: number) => void;
 }
 
 export const useAddModalStore = create<AddModalStore>((set) => ({
   step: 1,
   fileName: '',
   accidentName: '',
-  startTime: { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 },
-  endTime: { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 },
-  originalEndTime: { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 },
+  startTime: 0,
+  endTime: 0,
+  duration: 0,
 
   async initAddModal() {
     set({ fileName: await window.electron.addModal.getInitialFileName() });
+  },
+
+  initTime(duration) {
+    set({ endTime: duration, duration });
   },
 
   goToPreviousStep() { 
@@ -61,6 +65,6 @@ export const useAddModalStore = create<AddModalStore>((set) => ({
   },
 
   setOriginalEndTime(originalEndTime) { 
-    set({ originalEndTime }) 
+    set({ duration: originalEndTime }) 
   }
 }));
