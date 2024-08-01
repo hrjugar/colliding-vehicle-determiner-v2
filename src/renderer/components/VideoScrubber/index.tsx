@@ -27,8 +27,6 @@ export default function VideoScrubber({
   const handleSelectedAreaClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
 
-    console.log("handleSelectedAreaClick");
-
     if (videoRef.current && areaRef.current) {
       const areaRect = areaRef.current.getBoundingClientRect();
       const newPosition = e.clientX - areaRect.left;
@@ -38,7 +36,6 @@ export default function VideoScrubber({
       videoRef.current.currentTime = newTime;
     }
   }, [duration]);
-
 
   return (
     <div className="relative w-full min-h-20 flex flex-row justify-center items-stretch rounded-lg px-4 py-1">
@@ -50,6 +47,7 @@ export default function VideoScrubber({
           videoRef={videoRef}
           startTime={startTime}
           endTime={endTime}
+          duration={duration}
         />
       </div>
 

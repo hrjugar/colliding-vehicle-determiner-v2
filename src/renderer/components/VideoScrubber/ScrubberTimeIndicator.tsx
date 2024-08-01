@@ -1,15 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface ScrubberTimeIndicatorProps {
   videoRef: React.RefObject<HTMLVideoElement>;
   startTime: number;
   endTime: number;
+  duration: number;
 }
 
 export default function ScrubberTimeIndicator({
   videoRef,
   startTime,
   endTime,
+  duration,
 }: ScrubberTimeIndicatorProps) {
   const [videoProgressPercentage, setVideoProgressPercentage] = useState(0);
   const timeIndicatorRef = useRef<HTMLDivElement>(null);
@@ -24,7 +26,7 @@ export default function ScrubberTimeIndicator({
 
       const newTime = Math.max(
         Math.min(
-          newPositionPercentage * videoRef.current.duration,
+          newPositionPercentage * duration,
           endTime,
         ),
         startTime
@@ -48,8 +50,6 @@ export default function ScrubberTimeIndicator({
   const handleTimeUpdate = () => {
     if (videoRef.current) {
       const currentTime = videoRef.current.currentTime;
-      const duration = videoRef.current.duration;
-
       setVideoProgressPercentage((currentTime / duration) * 100);
     }
   };
@@ -67,7 +67,7 @@ export default function ScrubberTimeIndicator({
         videoRef.current.removeEventListener('timeupdate', handleTimeUpdate);
       }
     }
-  }, []);  
+  }, [startTime, endTime, duration]);  
 
   return (
     <div
