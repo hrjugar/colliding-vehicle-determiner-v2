@@ -21,7 +21,7 @@ export default function VideoPropertiesSection() {
   ] = useAddModalStore(
     useShallow((state) => [
       state.fileName,
-      state.setFileName,
+      state.updateFile,
       state.accidentName,
       state.setAccidentName,
       state.startTime,
@@ -75,7 +75,8 @@ export default function VideoPropertiesSection() {
 
         <AddModalFieldInputWrapper>
           <RiTimeLine size={18} />
-          <TimeInput time={startTime} setTime={setStartTime} maxTime={endTime} />
+          <TimeInput 
+            time={startTime} setTime={setStartTime} maxTime={endTime} />
         </AddModalFieldInputWrapper>
       </AddModalField>
 

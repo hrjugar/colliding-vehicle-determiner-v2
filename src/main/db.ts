@@ -5,7 +5,9 @@ import { DB_DIR } from "./directories";
 
 const dbName = 'cvd.sqlite3';
 
-fs.mkdirSync(DB_DIR, { recursive: true });
-const dbPath = path.join(DB_DIR, dbName);
+if (!fs.existsSync(DB_DIR)) {
+  fs.mkdirSync(DB_DIR, { recursive: true });
+}
 
+const dbPath = path.join(DB_DIR, dbName);
 export const db = new Database(dbPath);

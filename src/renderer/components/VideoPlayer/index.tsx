@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, useCallback, useImperativeHandle, useRef, useState } from "react";
 import { cn } from "../../utils/style";
 import { convertSecondsToTimeText } from "../../utils/time";
 import TimeInput from "../TimeInput";
@@ -9,10 +9,18 @@ interface VideoPlayerProps {
   className?: string;
   fileName: string;
   videoProps?: React.DetailedHTMLProps<React.VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement>;
+  startTime?: number;
+  endTime?: number;
 }
 
 const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>((props, videoRef) => {
-  const { className, fileName, videoProps = {} } = props;
+  const { 
+    className, 
+    fileName, 
+    videoProps = {},
+    startTime,
+    endTime,
+  } = props;
   
   const videoContainerRef = useRef<HTMLDivElement>(null);
 
@@ -23,19 +31,33 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>((props, video
   const [currentTime, setCurrentTime] = useState(0);
   const [isPaused, setIsPaused] = useState(true);
 
-  const handleLoadedMetadata = () => {
+  const handleLoadedMetadata = useCallback(() => {
     if (innerVideoRef.current) {
       setDuration(innerVideoRef.current.duration);
     }
-  };
+  }, []);
 
-  const handleTimeUpdate = () => {
+  const handleTimeUpdate = useCallback(() => {
     if (innerVideoRef.current) {
-      setCurrentTime(innerVideoRef.current.currentTime);
+      if (endTime !== undefined && innerVideoRef.current.currentTime > endTime) {
+        let newStartTime = startTime ?? 0;
+        innerVideoRef.current.pause();
+        setIsPaused(true);
+        innerVideoRef.current.currentTime = newStartTime;
+      } else {
+        setCurrentTime(innerVideoRef.current.currentTime);
+      }
     }
-  }
+  }, [startTime, endTime]);
 
-  const toggleFullScreen = () => {
+  const handleOnEnded = useCallback(() => {
+    if (innerVideoRef.current) {
+      setIsPaused(true);
+      innerVideoRef.current.currentTime = startTime ?? 0;
+    }
+  }, [startTime]);
+
+  const toggleFullScreen = useCallback(() => {
     if (document.fullscreenElement) {
       document.exitFullscreen();
     } else {
@@ -43,13 +65,35 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>((props, video
         videoContainerRef.current?.requestFullscreen();
       }
     }
-  }
+  }, []);
+
+  const rewindVideo = useCallback(() => {
+    if (innerVideoRef.current) {
+      let newTime = innerVideoRef.current.currentTime - 5;
+      if (startTime !== undefined) {
+        newTime = Math.max(newTime, startTime);
+      }
+
+      innerVideoRef.current.currentTime = newTime;
+    }
+  }, [startTime]);
+
+  const forwardVideo = useCallback(() => {
+    if (innerVideoRef.current) {
+      let newTime = innerVideoRef.current.currentTime + 5;
+      if (endTime !== undefined) {
+        newTime = Math.min(newTime, endTime);
+      }
+
+      innerVideoRef.current.currentTime = newTime;
+    }
+  }, [endTime]);
 
   return (
     <div
       ref={videoContainerRef} 
       className={cn(
-        "group relative flex-grow flex justify-center items-center bg-cool-gray-800 rounded-lg overflow-hidden", 
+        "group relative flex-grow basis-px flex justify-center items-center bg-cool-gray-100 rounded-lg overflow-hidden", 
         className
       )}
     >
@@ -77,7 +121,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>((props, video
             videoProps.onEnded(e);
           }
 
-          setIsPaused(true);
+          handleOnEnded();
         }}
       >
         <source src={`video://${fileName}`} type="video/mp4" />
@@ -85,7 +129,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>((props, video
 
       <div 
         className={`
-          absolute bottom-0 w-full h-12 flex justify-between items-center text-sm px-6 bg-cool-gray-800 transition-transform duration-500
+          absolute bottom-0 w-full h-12 flex justify-between items-center text-sm px-6 bg-cool-gray-900 transition-transform duration-500
           ${isPaused ? "translate-y-0" : "translate-y-12"}
           group-hover:translate-y-0
         `}
@@ -109,11 +153,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>((props, video
           <VideoButton 
             disabled={!innerVideoRef.current}
             icon={RiRewindMiniFill}
-            onClick={() => {
-              if (innerVideoRef.current) {
-                innerVideoRef.current.currentTime -= 5;
-              }
-            }}
+            onClick={rewindVideo}
           />
 
           {isPaused ? (
@@ -146,11 +186,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>((props, video
             disabled={!innerVideoRef.current}
             icon={RiRewindMiniFill}
             className="transform rotate-180"
-            onClick={() => {
-              if (innerVideoRef.current) {
-                innerVideoRef.current.currentTime += 5;
-              }
-            }}
+            onClick={forwardVideo}
           />
         </div>
         

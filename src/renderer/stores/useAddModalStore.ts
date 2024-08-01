@@ -9,23 +9,25 @@ interface AddModalStore {
   accidentName: string;
   startTime: number;
   endTime: number;
+  duration: number;
   videoRef: RefObject<HTMLVideoElement>;
   initAddModal: () => Promise<void>;
   initTime: (durationInSeconds: number) => void;
   goToPreviousStep: () => void;
   goToNextStep: () => void;
-  setFileName: (fileName: string) => void;
+  updateFile: (fileName: string) => void;
   setAccidentName: (accidentName: string) => void;
-  setStartTime: (startTime: number) => void;
-  setEndTime: (endTime: number) => void;
+  setStartTime: (startTime: number, currentTime?: number) => void;
+  setEndTime: (endTime: number, currentTime?: number) => void;
 }
 
-export const useAddModalStore = create<AddModalStore>((set) => ({
+export const useAddModalStore = create<AddModalStore>((set, get) => ({
   step: 1,
   fileName: '',
   accidentName: '',
   startTime: 0,
   endTime: 0,
+  duration: 0,
   videoRef: createRef<HTMLVideoElement>(),
 
   async initAddModal() {
@@ -33,7 +35,7 @@ export const useAddModalStore = create<AddModalStore>((set) => ({
   },
 
   initTime(duration) {
-    set({ endTime: duration });
+    set({ endTime: duration, duration });
   },
 
   goToPreviousStep() { 
@@ -48,19 +50,29 @@ export const useAddModalStore = create<AddModalStore>((set) => ({
     }));
   },
   
-  setFileName(fileName) { 
-    set({ fileName }) 
+  updateFile(fileName) { 
+    set({ fileName, startTime: 0 }); 
   },
 
   setAccidentName(accidentName) { 
     set({ accidentName }) 
   },
 
-  setStartTime(startTime) { 
-    set({ startTime }) 
+  setStartTime(startTime) {
+    set({ startTime }); 
+
+    let video = get().videoRef.current;
+    if (video) {
+      video.currentTime = startTime;
+    }
   },
 
-  setEndTime(endTime) { 
-    set({ endTime }) 
+  setEndTime(endTime) {
+    set({ endTime });
+
+    let video = get().videoRef.current;
+    if (video) {
+      video.currentTime = endTime;
+    }
   },
 }));

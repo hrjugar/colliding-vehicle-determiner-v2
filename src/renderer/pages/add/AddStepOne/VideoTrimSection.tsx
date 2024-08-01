@@ -3,22 +3,34 @@ import { AddModalSection } from "../../../components/ui/add-modal";
 import { useAddModalStore } from "../../../stores/useAddModalStore";
 import { useShallow } from "zustand/react/shallow";
 import VideoPlayer from "../../../components/VideoPlayer";
+import VideoScrubber from "../../../components/VideoScrubber";
 
 export default function VideoTrimSection() {
   const [
     fileName,
     videoRef,
-    initTime
+    startTime,
+    endTime,
+    duration,
+    initTime,
+    setStartTime,
+    setEndTime,
   ] = useAddModalStore(
     useShallow((state) => [
       state.fileName,
       state.videoRef,
-      state.initTime
+      state.startTime,
+      state.endTime,
+      state.duration,
+      state.initTime,
+      state.setStartTime,
+      state.setEndTime,
     ])
   );
 
   const handleOnLoadedMetadata = () => {
     if (videoRef.current) {
+      videoRef.current.currentTime = 0;
       initTime(videoRef.current.duration);
     }
   };
@@ -31,9 +43,18 @@ export default function VideoTrimSection() {
         videoProps={{
           onLoadedMetadata: handleOnLoadedMetadata
         }}
+        startTime={startTime}
+        endTime={endTime}
       />
 
-      <div className="w-full min-h-20 bg-red-200" />
+      <VideoScrubber 
+        videoRef={videoRef} 
+        startTime={startTime}
+        setStartTime={setStartTime}
+        endTime={endTime}
+        setEndTime={setEndTime}
+        duration={duration}
+      />
     </AddModalSection>
   )
 }

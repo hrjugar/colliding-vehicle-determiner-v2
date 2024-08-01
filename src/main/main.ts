@@ -187,30 +187,32 @@ app
       const fileSize = stat.size;
       const range = request.headers.get('Range');
 
+      let start = 0;
+      let end = fileSize - 1;
       if (range) {
         const parts = range.replace(/bytes=/, '').split("-");
-        const start = parseInt(parts[0], 10);
-        const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
-        const chunkSize = (end - start) + 1;
-        const file = fs.createReadStream(videoPath, { start, end });
-        const headers = {
-          'Content-Range': `bytes ${start}-${end}/${fileSize}`,
-          'Accept-Ranges': 'bytes',
-          'Content-Length': chunkSize.toString(),
-          'Content-Type': 'video/mp4',
-        };
-
-        return new Response(Readable.toWeb(file) as BodyInit, { status: 206, headers });
-      } else {
-        const headers = {
-          'Content-Length': fileSize.toString(),
-          'Content-Type': 'video/mp4',
-        };
-
-        const file = fs.createReadStream(videoPath);
-        return new Response(Readable.toWeb(file) as BodyInit, { status: 200, headers });
+        start = parseInt(parts[0], 10);
+        if (parts[1]) {
+          end = parseInt(parts[1], 10);
+        }
       }
-    })
+
+      const chunkSize = (end - start) + 1;
+      const headers = new Headers({ 
+        'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+        'Accept-Ranges': 'bytes',
+        'Content-Length': chunkSize.toString(),
+        'Content-Type': 'video/mp4',
+      });
+
+      const fileStream = fs.createReadStream(videoPath, { start, end });
+      const readableStream = Readable.toWeb(fileStream) as BodyInit;
+
+      return new Response(readableStream, {
+        status: range ? 206 : 200,
+        headers,
+      });
+    });
 
     protocol.handle('mediahandler', async (request) => {
       const url = request.url.split('//');
