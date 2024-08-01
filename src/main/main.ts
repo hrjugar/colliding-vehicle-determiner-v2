@@ -2,21 +2,14 @@
 
 import os from 'os';
 import path from 'path';
-import fs from 'fs';
-import { app, BrowserWindow, ipcMain, net, protocol, shell } from 'electron';
-import MenuBuilder from './menu';
-import { resolveHtmlPath } from './util';
-import { clearTempDir, getAssetPath, setupDirectories } from './directories';
+import { app, ipcMain, net, protocol } from 'electron';
+import { clearTempDir, setupDirectories } from './directories';
 import { setupCollections } from './collections';
 import { db } from './db';
 import { getProjectsDir } from './collections/settings';
-import { CHANNEL_ADD_MODAL_INITIAL_FILE_NAME_GET, CHANNEL_ADD_MODAL_WINDOW_CLOSE, CHANNEL_ADD_MODAL_WINDOW_OPEN, CHANNEL_OS_GET } from './channels';
-import { Readable } from 'stream';
+import { CHANNEL_OS_GET } from './channels';
 import { setupVideoServer, stopVideoServer } from './videoServer';
-
-let mainWindow: BrowserWindow | null = null;
-let addModalWindow: BrowserWindow | null = null;
-let addModalInitialFilePath = '';
+import { closeWindows, createMainWindow, mainWindow, setUpWindows } from './windows';
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -27,126 +20,7 @@ if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true')
   require('electron-debug')();
 }
 
-protocol.registerSchemesAsPrivileged([
-  {
-    scheme: 'video',
-    privileges: {
-      standard: true,
-      secure: true,
-      supportFetchAPI: true,
-      corsEnabled: true,
-      stream: true,
-      bypassCSP: true,
-    },
-  }
-]);
-
-const createMainWindow = async () => {
-  mainWindow = new BrowserWindow({
-    show: false,
-    minWidth: 800,
-    ...(process.env.NODE_ENV === 'development' ? { width: 1500 } : {}),
-    minHeight: 600,
-    icon: getAssetPath('icon.png'),
-    titleBarStyle: 'hidden',
-    trafficLightPosition: {
-      x: 24,
-      y: 20,
-    },
-    webPreferences: {
-      preload: app.isPackaged
-        ? path.join(__dirname, 'preload.js')
-        : path.join(__dirname, '../../.erb/dll/preload.js'),
-    },
-  });
-
-  mainWindow.loadURL(resolveHtmlPath('index.html', 'main'));
-
-  mainWindow.on('ready-to-show', () => {
-    if (!mainWindow) {
-      throw new Error('"mainWindow" is not defined');
-    }
-    if (process.env.START_MINIMIZED) {
-      mainWindow.minimize();
-    } else {
-      mainWindow.show();
-    }
-  });
-
-  mainWindow.on('closed', () => {
-    mainWindow = null;
-  });
-
-  const menuBuilder = new MenuBuilder(mainWindow);
-  menuBuilder.buildMenu();
-
-  mainWindow.webContents.setWindowOpenHandler((edata) => {
-    shell.openExternal(edata.url);
-    return { action: 'deny' };
-  });
-};
-
-const createAddModalWindow = async () => {
-  addModalWindow = new BrowserWindow({
-    parent: mainWindow!,
-    modal: true,
-    show: false,
-    width: 1200,
-    height: 800,
-    minWidth: 1200,
-    minHeight: 800,
-    icon: getAssetPath('icon.png'),
-    titleBarStyle: 'hidden',
-    trafficLightPosition: {
-      x: 24,
-      y: 20,
-    },
-    webPreferences: {
-      preload: app.isPackaged
-        ? path.join(__dirname, 'preload.js')
-        : path.join(__dirname, '../../.erb/dll/preload.js'),
-    },
-  });
-
-  addModalWindow.loadURL(resolveHtmlPath('index.html', "add-modal"));
-
-  addModalWindow.on('ready-to-show', () => {
-    if (!addModalWindow) {
-      throw new Error('"secondaryWindow" is not defined');
-    }
-    
-    addModalWindow.show();
-  });
-
-  addModalWindow.on('closed', () => {
-    addModalWindow = null;
-  });
-
-  addModalWindow.webContents.setWindowOpenHandler((edata) => {
-    shell.openExternal(edata.url);
-    return { action: 'deny' };
-  });
-};
-
 ipcMain.handle(CHANNEL_OS_GET, () => os.platform());
-
-ipcMain.on(CHANNEL_ADD_MODAL_WINDOW_OPEN, (_, filePath) => {
-  if (!addModalWindow) {
-    addModalInitialFilePath = filePath;
-    createAddModalWindow();
-  }
-});
-
-ipcMain.on(CHANNEL_ADD_MODAL_WINDOW_CLOSE, () => {
-  if (addModalWindow) {
-    addModalInitialFilePath = '';
-    addModalWindow.close();
-  }
-});
-
-ipcMain.handle(CHANNEL_ADD_MODAL_INITIAL_FILE_NAME_GET, () => {
-  return addModalInitialFilePath;
-});
 
 app.on('window-all-closed', () => {
   stopVideoServer();
@@ -155,13 +29,7 @@ app.on('window-all-closed', () => {
 });
 
 app.on('before-quit', () => {
-  if (mainWindow) {
-    mainWindow.close();
-  }
-
-  if (addModalWindow) {
-    addModalWindow.close();
-  }
+  closeWindows();
 
   // NOTE: This will not work when app is closed through Windows shut down or log out.
   // TODO; Find a way to clear temp dir on Windows shut down or log out.
@@ -174,46 +42,7 @@ app
     setupDirectories();
     setupVideoServer();
     setupCollections();
-    createMainWindow();
-
-    protocol.handle('video', async (request) => {
-      // TODO: Remove leading slash for non-MacOS platforms
-      const videoPath = '/' + decodeURIComponent(request.url.replace('video://', ''));
-
-      if (!fs.existsSync(videoPath)) {
-        return new Response('File Not Found', { status: 404 });
-      }
-
-      const stat = fs.statSync(videoPath);
-      const fileSize = stat.size;
-      const range = request.headers.get('Range');
-
-      let start = 0;
-      let end = fileSize - 1;
-      if (range) {
-        const parts = range.replace(/bytes=/, '').split("-");
-        start = parseInt(parts[0], 10);
-        if (parts[1]) {
-          end = parseInt(parts[1], 10);
-        }
-      }
-
-      const chunkSize = (end - start) + 1;
-      const headers = new Headers({ 
-        'Content-Range': `bytes ${start}-${end}/${fileSize}`,
-        'Accept-Ranges': 'bytes',
-        'Content-Length': chunkSize.toString(),
-        'Content-Type': 'video/mp4',
-      });
-
-      const fileStream = fs.createReadStream(videoPath, { start, end });
-      const readableStream = Readable.toWeb(fileStream) as BodyInit;
-
-      return new Response(readableStream, {
-        status: range ? 206 : 200,
-        headers,
-      });
-    });
+    setUpWindows();
 
     protocol.handle('mediahandler', async (request) => {
       const url = request.url.split('//');
