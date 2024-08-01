@@ -2,7 +2,7 @@
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 import { Accident, AccidentInput, Setting, Settings } from '../types';
-import { CHANNEL_ACCIDENT_CHANGE, CHANNEL_ACCIDENT_DELETE, CHANNEL_ACCIDENTS_ADD_ONE, CHANNEL_ACCIDENTS_DELETE_ONE, CHANNEL_ACCIDENTS_FIND, CHANNEL_ACCIDENTS_GET_ALL, CHANNEL_ACCIDENTS_GET_ONE, CHANNEL_ADD_MODAL_INITIAL_FILE_NAME_GET, CHANNEL_ADD_MODAL_WINDOW_CLOSE, CHANNEL_ADD_MODAL_WINDOW_OPEN, CHANNEL_OS_GET, CHANNEL_SETTING_CHANGE, CHANNEL_SETTINGS_GET, CHANNEL_SETTINGS_SET } from './channels';
+import { CHANNEL_ACCIDENT_CHANGE, CHANNEL_ACCIDENT_DELETE, CHANNEL_ACCIDENTS_ADD_ONE, CHANNEL_ACCIDENTS_DELETE_ONE, CHANNEL_ACCIDENTS_FIND, CHANNEL_ACCIDENTS_GET_ALL, CHANNEL_ACCIDENTS_GET_ONE, CHANNEL_ADD_MODAL_INITIAL_FILE_NAME_GET, CHANNEL_ADD_MODAL_WINDOW_CLOSE, CHANNEL_ADD_MODAL_WINDOW_OPEN, CHANNEL_OS_GET, CHANNEL_PORT_GET, CHANNEL_SETTING_CHANGE, CHANNEL_SETTINGS_GET, CHANNEL_SETTINGS_SET } from './channels';
 
 // export type Channels = 'ipc-example';
 
@@ -29,14 +29,19 @@ const electronHandler = {
       return ipcRenderer.invoke(CHANNEL_OS_GET);
     }
   },
+  port: {
+    get(): Promise<number> {
+      return ipcRenderer.invoke(CHANNEL_PORT_GET);
+    }
+  },
   addModal: {
-    async open(fileName: string) {
-      ipcRenderer.send(CHANNEL_ADD_MODAL_WINDOW_OPEN, fileName);
+    async open(filePath: string) {
+      ipcRenderer.send(CHANNEL_ADD_MODAL_WINDOW_OPEN, filePath);
     },
     async close() {
       ipcRenderer.send(CHANNEL_ADD_MODAL_WINDOW_CLOSE);
     },
-    getInitialFileName(): Promise<string> {
+    getInitialFilePath(): Promise<string> {
       return ipcRenderer.invoke(CHANNEL_ADD_MODAL_INITIAL_FILE_NAME_GET);
     }
   },

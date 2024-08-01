@@ -12,10 +12,11 @@ import { db } from './db';
 import { getProjectsDir } from './collections/settings';
 import { CHANNEL_ADD_MODAL_INITIAL_FILE_NAME_GET, CHANNEL_ADD_MODAL_WINDOW_CLOSE, CHANNEL_ADD_MODAL_WINDOW_OPEN, CHANNEL_OS_GET } from './channels';
 import { Readable } from 'stream';
+import { setupVideoServer, stopVideoServer } from './videoServer';
 
 let mainWindow: BrowserWindow | null = null;
 let addModalWindow: BrowserWindow | null = null;
-let addModalInitialFileName = '';
+let addModalInitialFilePath = '';
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -129,29 +130,28 @@ const createAddModalWindow = async () => {
 
 ipcMain.handle(CHANNEL_OS_GET, () => os.platform());
 
-ipcMain.on(CHANNEL_ADD_MODAL_WINDOW_OPEN, (_, fileName) => {
+ipcMain.on(CHANNEL_ADD_MODAL_WINDOW_OPEN, (_, filePath) => {
   if (!addModalWindow) {
-    addModalInitialFileName = fileName;
+    addModalInitialFilePath = filePath;
     createAddModalWindow();
   }
 });
 
 ipcMain.on(CHANNEL_ADD_MODAL_WINDOW_CLOSE, () => {
   if (addModalWindow) {
-    addModalInitialFileName = '';
+    addModalInitialFilePath = '';
     addModalWindow.close();
   }
 });
 
 ipcMain.handle(CHANNEL_ADD_MODAL_INITIAL_FILE_NAME_GET, () => {
-  return addModalInitialFileName;
+  return addModalInitialFilePath;
 });
 
 app.on('window-all-closed', () => {
+  stopVideoServer();
   db.close();
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  app.quit();
 });
 
 app.on('before-quit', () => {
@@ -172,6 +172,7 @@ app
   .whenReady()
   .then(() => {
     setupDirectories();
+    setupVideoServer();
     setupCollections();
     createMainWindow();
 

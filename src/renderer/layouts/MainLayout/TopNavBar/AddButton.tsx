@@ -5,9 +5,9 @@ import { useMutation } from "react-query";
 export default function AddButton() {
   const findAccident = useAccidentsStore(state => state.findAccident);
   const findAccidentMutation = useMutation(findAccident, {
-    onSuccess: async (fileName) => {
-      if (fileName) {
-        await window.electron.addModal.open(fileName);
+    onSuccess: async (filePath) => {
+      if (filePath) {
+        await window.electron.addModal.open(filePath);
       }
     },
   });

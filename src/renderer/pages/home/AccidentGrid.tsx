@@ -2,7 +2,7 @@ import { Accident } from "../../../types";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 import { useAccidentsStore } from "../../stores/useAccidentsStore";
-import { useOsStore } from "../../stores/useOsStore";
+import { useServerConfigStore } from "../../stores/useServerConfigStore";
 import { useAccidentItemsStore } from "./useAccidentItemsStore";
 import { RiDeleteBinLine } from "@remixicon/react";
 import { convertToRelativeDate } from "../../utils/date";
@@ -23,7 +23,7 @@ export default function AccidentGrid({ processedAccidents } : AccidentGridProps)
     ])
   );
 
-  const os = useOsStore((state) => state.os);
+  const os = useServerConfigStore((state) => state.os);
   const navigate = useNavigate();
 
   const handleItemClick = (e: React.MouseEvent, accident: Accident, index: number) => {

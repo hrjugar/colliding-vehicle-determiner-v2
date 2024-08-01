@@ -4,10 +4,11 @@ import { convertSecondsToTimeText } from "../../utils/time";
 import TimeInput from "../TimeInput";
 import { RiFullscreenLine, RiPauseFill, RiPlayFill, RiRewindMiniFill } from "@remixicon/react";
 import VideoButton from "./VideoButton";
+import { useServerConfigStore } from "../../stores/useServerConfigStore";
 
 interface VideoPlayerProps {
   className?: string;
-  fileName: string;
+  filePath: string;
   videoProps?: React.DetailedHTMLProps<React.VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement>;
   startTime?: number;
   endTime?: number;
@@ -16,12 +17,13 @@ interface VideoPlayerProps {
 const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>((props, videoRef) => {
   const { 
     className, 
-    fileName, 
+    filePath, 
     videoProps = {},
     startTime,
     endTime,
   } = props;
   
+  const port = useServerConfigStore((state) => state.port);
   const videoContainerRef = useRef<HTMLDivElement>(null);
 
   const innerVideoRef = useRef<HTMLVideoElement>(null);
@@ -99,7 +101,7 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>((props, video
     >
       <video
         className="w-full h-full object-contain"
-        key={`video-${fileName}`}
+        key={`video-${filePath}`}
         ref={innerVideoRef}
         {...videoProps}
         onLoadedMetadata={(e) => {
@@ -124,7 +126,10 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>((props, video
           handleOnEnded();
         }}
       >
-        <source src={`video://${fileName}`} type="video/mp4" />
+        <source 
+          src={`http://localhost:${port}/video?path=${filePath}`} 
+          type="video/mp4" 
+        />
       </video>
 
       <div 

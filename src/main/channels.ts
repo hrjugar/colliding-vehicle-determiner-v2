@@ -15,3 +15,5 @@ export const CHANNEL_OS_GET = 'os-get';
 export const CHANNEL_ADD_MODAL_WINDOW_OPEN = 'add-modal-window-open';
 export const CHANNEL_ADD_MODAL_WINDOW_CLOSE = 'add-modal-window-close';
 export const CHANNEL_ADD_MODAL_INITIAL_FILE_NAME_GET = 'add-modal-initial-file-name-get';
+
+export const CHANNEL_PORT_GET = 'port-get';

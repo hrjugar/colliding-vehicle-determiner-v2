@@ -9,13 +9,13 @@ const titles = [
 
 export default function TopNavBar() {
   const step = useAddModalStore((state) => state.step);
-  const fileName = useAddModalStore((state) => state.fileName);
+  const filePath = useAddModalStore((state) => state.filePath);
 
   return (
     <nav 
       className="draggable sticky top-0 w-full min-h-top-nav flex flex-row justify-between items-center px-6 py-4 bg-white border-b border-cool-gray-300"
     >
-      {fileName && (
+      {filePath && (
         <>
           <span className="flex-1 text-sm text-cool-gray-500">Step {step}/3</span>
           <p className="font-medium text-cool-gray-700">{titles[step - 1]}</p>

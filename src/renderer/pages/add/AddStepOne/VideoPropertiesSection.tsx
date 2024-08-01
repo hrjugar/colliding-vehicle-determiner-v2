@@ -9,8 +9,8 @@ import TimeInput from "../../../components/TimeInput";
 export default function VideoPropertiesSection() {
   const findAccident = useAccidentsStore((state) => state.findAccident);
   const [
-    fileName,
-    setFileName,
+    filePath,
+    updateFile,
     accidentName,
     setAccidentName,
     startTime,
@@ -20,7 +20,7 @@ export default function VideoPropertiesSection() {
     videoRef
   ] = useAddModalStore(
     useShallow((state) => [
-      state.fileName,
+      state.filePath,
       state.updateFile,
       state.accidentName,
       state.setAccidentName,
@@ -33,9 +33,9 @@ export default function VideoPropertiesSection() {
   );
 
   const findAccidentMutation = useMutation(findAccident, {
-    onSuccess: async (fileName) => {
-      if (fileName) {
-        setFileName(fileName);
+    onSuccess: async (filePath) => {
+      if (filePath) {
+        updateFile(filePath);
       }
     },
   });
@@ -61,12 +61,12 @@ export default function VideoPropertiesSection() {
       </AddModalField>
 
       <AddModalField>
-        <AddModalFieldLabel htmlFor="fileName">File</AddModalFieldLabel>
+        <AddModalFieldLabel htmlFor="filePath">File</AddModalFieldLabel>
 
-        <AddModalFieldInputWrapper htmlFor="fileName" className="cursor-pointer" title={fileName}>
+        <AddModalFieldInputWrapper htmlFor="filePath" className="cursor-pointer" title={filePath}>
           <RiFolderLine className="min-w-[1.125rem] min-h-[1.125rem]" />
-          <span className="whitespace-nowrap overflow-hidden overflow-ellipsis">{fileName}</span>
-          <button id="fileName" type="button" className="hidden" onClick={() => findAccidentMutation.mutate()} />
+          <span className="whitespace-nowrap overflow-hidden overflow-ellipsis">{filePath}</span>
+          <button id="filePath" type="button" className="hidden" onClick={() => findAccidentMutation.mutate()} />
         </AddModalFieldInputWrapper>
       </AddModalField>
 

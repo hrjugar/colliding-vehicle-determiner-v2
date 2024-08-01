@@ -5,7 +5,7 @@ type AddModalStep = 1 | 2 | 3;
 
 interface AddModalStore {
   step: AddModalStep;
-  fileName: string;
+  filePath: string;
   accidentName: string;
   startTime: number;
   endTime: number;
@@ -15,7 +15,7 @@ interface AddModalStore {
   initTime: (durationInSeconds: number) => void;
   goToPreviousStep: () => void;
   goToNextStep: () => void;
-  updateFile: (fileName: string) => void;
+  updateFile: (filePath: string) => void;
   setAccidentName: (accidentName: string) => void;
   setStartTime: (startTime: number, currentTime?: number) => void;
   setEndTime: (endTime: number, currentTime?: number) => void;
@@ -23,7 +23,7 @@ interface AddModalStore {
 
 export const useAddModalStore = create<AddModalStore>((set, get) => ({
   step: 1,
-  fileName: '',
+  filePath: '',
   accidentName: '',
   startTime: 0,
   endTime: 0,
@@ -31,7 +31,7 @@ export const useAddModalStore = create<AddModalStore>((set, get) => ({
   videoRef: createRef<HTMLVideoElement>(),
 
   async initAddModal() {
-    set({ fileName: await window.electron.addModal.getInitialFileName() });
+    set({ filePath: await window.electron.addModal.getInitialFilePath() });
   },
 
   initTime(duration) {
@@ -50,8 +50,8 @@ export const useAddModalStore = create<AddModalStore>((set, get) => ({
     }));
   },
   
-  updateFile(fileName) { 
-    set({ fileName, startTime: 0 }); 
+  updateFile(filePath) { 
+    set({ filePath, startTime: 0 }); 
   },
 
   setAccidentName(accidentName) { 

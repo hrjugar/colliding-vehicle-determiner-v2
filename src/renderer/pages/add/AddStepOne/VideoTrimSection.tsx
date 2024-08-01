@@ -7,7 +7,7 @@ import VideoScrubber from "../../../components/VideoScrubber";
 
 export default function VideoTrimSection() {
   const [
-    fileName,
+    filePath,
     videoRef,
     startTime,
     endTime,
@@ -17,7 +17,7 @@ export default function VideoTrimSection() {
     setEndTime,
   ] = useAddModalStore(
     useShallow((state) => [
-      state.fileName,
+      state.filePath,
       state.videoRef,
       state.startTime,
       state.endTime,
@@ -39,7 +39,7 @@ export default function VideoTrimSection() {
     <AddModalSection className="flex-grow p-4">
       <VideoPlayer
         ref={videoRef}
-        fileName={fileName}
+        filePath={filePath}
         videoProps={{
           onLoadedMetadata: handleOnLoadedMetadata
         }}

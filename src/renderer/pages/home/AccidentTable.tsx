@@ -2,7 +2,7 @@ import { Accident } from "../../../types";
 import { convertToRelativeDate } from "../../utils/date";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
-import { useOsStore } from "../../stores/useOsStore";
+import { useServerConfigStore } from "../../stores/useServerConfigStore";
 import { useAccidentItemsStore } from "./useAccidentItemsStore";
 
 interface AccidentTableProps {
@@ -20,7 +20,7 @@ export default function AccidentTable({ processedAccidents } : AccidentTableProp
     ])
   );
 
-  const os = useOsStore((state) => state.os);
+  const os = useServerConfigStore((state) => state.os);
   const navigate = useNavigate();
 
   const handleItemClick = (e: React.MouseEvent, accident: Accident, index: number) => {
